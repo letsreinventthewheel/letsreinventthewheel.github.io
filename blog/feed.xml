@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Wed, 21 May 2025 07:00:44 +0000</lastBuildDate><item><title>The Start of Something New</title><link>https://letsreinventthewheel.github.io/blog/intro-post</link><description><![CDATA[<p>Let’s Reinvent the Wheel is all about learning by building from scratch.
+We’re starting with an empty GitHub and LeetCode profile, exploring backend,
+frontend, and interview prep. The goal is to recreate existing tools and ideas
+to truly understand how they work. No fixed roadmap — just hands-on projects
+that challenge and teach</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/intro-post</guid><pubDate>Wed, 21 May 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>There’s only one way to truly understand how things work: <strong>build them yourself</strong>.</p>
+<p>That’s what this journey is all about. We’re here to learn, inspect, and recreate
+existing tools, libraries, and ideas - not just for the sake of it, but to build
+real knowledge. And along the way, we’re going to document everything, growing a
+GitHub profile that is a collection of all sorts of projects, a showcase of what
+we’ve learned and built. A portfolio that could, one day, help land a job.</p>
+<p>But right now? <strong>We’re starting from zero</strong>.</p>
+<ul>
+<li>📂 No repositories.</li>
+<li>📝 No solved LeetCode problems.</li>
+<li>🛠️ No half-finished projects.</li>
+</ul>
+<p>Just a blank slate and an open-ended path forward.</p>
+<h2><a href="#what-this-is-all-about" aria-hidden="true" class="anchor" id="what-this-is-all-about"></a>What This Is All About</h2>
+<p><em>Let’s Reinvent the Wheel</em> isn’t about following a fixed roadmap or gradually increasing
+difficulty. Some projects will be simple, others more complex. One day, we might build a
+tiny utility. Another day, we could dive deep into a couple month long project.</p>
+<p>We’re not locked into a single vertical - sometimes we’ll be in backend, other times frontend,
+sometimes we’ll explore what it’s like to prepare for technical interviews using LeetCode.
+After all, one of our goals with this GitHub journey is to create a strong profile that
+could actually help us land a job.</p>
+<p>And here’s something important: <strong>we’re not trying to invent brand-new things</strong>. A lot of what
+we’ll build will be inspired by or directly rebuilt based on existing work. Because the best
+way to truly understand something is to take it apart and rebuild it yourself.</p>
+<h2><a href="#how-we-approach-this" aria-hidden="true" class="anchor" id="how-we-approach-this"></a>How We Approach This</h2>
+<ul>
+<li>Not just “what” but “how” and “why”. We’re here to understand what we write, not just follow tutorials.</li>
+<li>No single track. Backend, frontend, problem-solving, automation - whatever interests us, we’ll explore.</li>
+<li>We stand on the shoulders of giants. Our projects won’t always be original, and that’s the point.</li>
+</ul>
+<h2><a href="#the-journey-starts-now" aria-hidden="true" class="anchor" id="the-journey-starts-now"></a>The Journey Starts Now</h2>
+<p>From here, we jump right in. No predefined order, no rigid path - just a series of projects
+that challenge, teach, and (hopefully) inspire.</p>
+<p>If that sounds like your kind of thing, <strong>subscribe</strong>, check out the blog, and let’s start building.</p>
+<p><em>Let’s Reinvent the Wheel</em> - not because we have to, but because we want to 🚀</p>
+]]></content:encoded></item></channel></rss>
