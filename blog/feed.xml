@@ -1,4 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 22 May 2025 13:22:39 +0000</lastBuildDate><item><title>The Start of Something New</title><link>https://letsreinventthewheel.github.io/blog/intro-post</link><description><![CDATA[<p>Let’s Reinvent the Wheel is all about learning by building from scratch.
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 23 May 2025 21:43:31 +0000</lastBuildDate><item><title>Build Your Own RoyalRoad to EPUB Converter</title><link>https://letsreinventthewheel.github.io/blog/royal-road-to-epub</link><description><![CDATA[<p>Learn how to build a simple Python script that scrapes stories from RoyalRoad
+and converts them into EPUB files for offline reading. This beginner friendly
+project uses <code>BeautifulSoup</code>, <code>requests</code>, and <code>EbookLib</code> to walk you through a
+full pipeline from HTML scraping to ebook generation. A perfect start for anyone
+looking to automate something useful.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/royal-road-to-epub</guid><pubDate>Sat, 24 May 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>Welcome back to <em>Let’s Reinvent the Wheel</em>. In our first hands-on project, we build
+a Python-based tool that lets you scrape <a href="https://www.royalroad.com">RoyalRoad</a> stories and convert them into
+EPUB files. Perfect for offline reading on e-readers.</p>
+<p>This project is aimed at beginner-to-intermediate developers looking to sharpen their
+skills while creating something genuinely useful. As a result we get a tiny tool, which
+leans on a few powerful libraries like <code>requests</code>, <code>BeautifulSoup</code>, and <code>EbookLib</code>.</p>
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<p>In this episode, we:</p>
+<ul>
+<li>Analyze the HTML structure of <a href="https://www.royalroad.com">RoyalRoad</a> story pages</li>
+<li>Use <code>requests</code> to fetch page content</li>
+<li>Extract and clean data with <code>BeautifulSoup</code></li>
+<li>Format chapters and metadata for EPUB generation</li>
+<li>Use <code>EbookLib</code> to output a polished .epub file</li>
+<li>Package everything into a script you can reuse or extend</li>
+</ul>
+<p>This is a full walkthrough of a minimal but complete content pipeline - scraping to final EPUB.</p>
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>The full source code is available here: <a href="https://github.com/letsreinventthewheel/royalroad2epub">royalroad2epub</a></p>
+<h2><a href="#documentation" aria-hidden="true" class="anchor" id="documentation"></a>Documentation</h2>
+<p>These are helpful docs of the libraries which we used in this video:</p>
+<ul>
+<li><a href="https://requests.readthedocs.io/en/latest/">Requests documentation</a></li>
+<li><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/">BeautifulSoup documentation</a></li>
+<li><a href="https://docs.sourcefabric.org/projects/ebooklib/en/latest/tutorial.html#creating-epub">EbookLib documentation</a></li>
+</ul>
+<h2><a href="#stay-in-the-loop" aria-hidden="true" class="anchor" id="stay-in-the-loop"></a>Stay in the Loop</h2>
+<p>Have questions, ideas, or something you’d like me to reinvent next? Drop a comment on the video!</p>
+<p>Thanks for watching, and until next time. Keep reinventing!</p>
+]]></content:encoded></item><item><title>The Start of Something New</title><link>https://letsreinventthewheel.github.io/blog/intro-post</link><description><![CDATA[<p>Let’s Reinvent the Wheel is all about learning by building from scratch.
 We’re starting with an empty GitHub and LeetCode profile, exploring backend,
 frontend, and interview prep. The goal is to recreate existing tools and ideas
 to truly understand how they work. No fixed roadmap — just hands-on projects
