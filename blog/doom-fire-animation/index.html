@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><title>Doom Fire Animation with PPM and mpv</title><meta charset="utf-8"><meta name="title" content="Doom Fire Animation with PPM and mpv"><meta name="description" content="&lt;p&gt;Learn how to create a mesmerizing Doom Fire animation from scratch in C11, using
+only the PPM image format and mpv for display. This hands-on tutorial walks you
+through simulating classic pixel fire in a modern C environment, without any graphics
+libraries - just raw image output and a powerful video player.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Doom Fire Animation with PPM and mpv</h1><p>Published on <time class="dt-published" datetime="2025-05-30">May 30<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/Iy099rEgFjE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>Welcome back to <em>Let’s Reinvent the Wheel</em>.
+In this project, we bring the iconic “Doom Fire” animation to life using pure C11, the simplest PPM image format, and <a href="https://mpv.io/">mpv</a> as our display engine. If you want to make fire on your terminal with <em>zero</em> dependencies beyond your compiler and a media player, this is the perfect starting point.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<p>In this episode, you will:</p>
+<ul>
+<li>Explore the <strong>Doom Fire</strong> algorithm and how it works</li>
+<li>Implement a full simulation loop in modern <strong>C11</strong></li>
+<li>Use the portable <a href="https://en.wikipedia.org/wiki/Netpbm_format#PPM_example">PPM (P6)</a> format to output images frame by frame</li>
+<li>Pipe your animation directly into <code>mpv</code> to display it (no windowing or GUI required)</li>
+<li>Tweak parameters to create pixel perfect retro effects, or scale up for a modern, high resolution blaze</li>
+</ul>
+<p>By the end, you’ll have a pixel fire demo that’s blazing on your screen and ready for further hacks (all of that without touching any graphics libraries).</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You’ll find the complete source code here: <a href="https://github.com/letsreinventthewheel/doomfire">doomfire</a></p>
+<h3><a href="#how-it-works" aria-hidden="true" class="anchor" id="how-it-works"></a><strong>How it works:</strong></h3>
+<ul>
+<li><strong>Simulate</strong> a fire buffer where each pixel’s intensity is updated using random decay and spreading.</li>
+<li><strong>Render</strong> each frame as a raw PPM (P6) image, writing directly to stdout.</li>
+<li><strong>Display</strong> in real time by piping your program’s output to <code>mpv</code>, which interprets the image stream as a video.</li>
+</ul>
+<p><strong>To run:</strong></p>
+<pre class="language-sh"><span class="source shell bash"><span class="meta function-call shell"><span class="variable function shell">gcc</span></span><span class="meta function-call arguments shell"><span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>std</span><span class="keyword operator assignment option shell">=</span>c11<span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>O3</span><span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>o</span> doomfire doomfire.c</span>
+<span class="meta function-call shell"><span class="variable function shell">./doomfire</span></span> <span class="keyword operator logical pipe shell">|</span> <span class="meta function-call shell"><span class="variable function shell">mpv</span></span><span class="meta function-call arguments shell"> -</span>
+</span></code></pre>
+<blockquote>
+<p>No graphics dependencies, no window management - only <code>mpv</code> as <a href="https://en.wikipedia.org/wiki/Most_valuable_player">MVP</a></p>
+</blockquote>
+<hr />
+<h2><a href="#tweak-and-expand" aria-hidden="true" class="anchor" id="tweak-and-expand"></a>Tweak and Expand</h2>
+<ul>
+<li>Adjust fire size, scaling, and palette to match your aesthetic.</li>
+<li>Overlay fire onto other images, or add simple alpha blending for cool effects.</li>
+<li>Try increasing the scale factor for a more “blocky” fire, or experiment with different color palettes.</li>
+</ul>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<p>If you want to dig deeper, check out these resources:</p>
+<ul>
+<li><a href="https://netpbm.sourceforge.net/doc/ppm.html">PPM Format Documentation</a></li>
+<li><a href="https://fabiensanglard.net/doom_fire_psx/">How Doom Fire Was Done</a></li>
+<li><a href="https://mpv.io/manual/master/">mpv User Guide</a></li>
+</ul>
+<hr />
+<h2><a href="#stay-in-the-loop" aria-hidden="true" class="anchor" id="stay-in-the-loop"></a>Stay in the Loop</h2>
+<p>Have questions or ideas for more coding adventures?
+Drop a comment on the video, or suggest the next project idea you want to reinvent!</p>
+<p>Thanks for following along, and until next time. Keep reinventing!</p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>

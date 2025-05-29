@@ -1,4 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 23 May 2025 21:43:31 +0000</lastBuildDate><item><title>Build Your Own RoyalRoad to EPUB Converter</title><link>https://letsreinventthewheel.github.io/blog/royal-road-to-epub</link><description><![CDATA[<p>Learn how to build a simple Python script that scrapes stories from RoyalRoad
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 29 May 2025 23:07:04 +0000</lastBuildDate><item><title>Doom Fire Animation with PPM and mpv</title><link>https://letsreinventthewheel.github.io/blog/doom-fire-animation</link><description><![CDATA[<p>Learn how to create a mesmerizing Doom Fire animation from scratch in C11, using
+only the PPM image format and mpv for display. This hands-on tutorial walks you
+through simulating classic pixel fire in a modern C environment, without any graphics
+libraries - just raw image output and a powerful video player.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/doom-fire-animation</guid><pubDate>Fri, 30 May 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>Welcome back to <em>Let’s Reinvent the Wheel</em>.
+In this project, we bring the iconic “Doom Fire” animation to life using pure C11, the simplest PPM image format, and <a href="https://mpv.io/">mpv</a> as our display engine. If you want to make fire on your terminal with <em>zero</em> dependencies beyond your compiler and a media player, this is the perfect starting point.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<p>In this episode, you will:</p>
+<ul>
+<li>Explore the <strong>Doom Fire</strong> algorithm and how it works</li>
+<li>Implement a full simulation loop in modern <strong>C11</strong></li>
+<li>Use the portable <a href="https://en.wikipedia.org/wiki/Netpbm_format#PPM_example">PPM (P6)</a> format to output images frame by frame</li>
+<li>Pipe your animation directly into <code>mpv</code> to display it (no windowing or GUI required)</li>
+<li>Tweak parameters to create pixel perfect retro effects, or scale up for a modern, high resolution blaze</li>
+</ul>
+<p>By the end, you’ll have a pixel fire demo that’s blazing on your screen and ready for further hacks (all of that without touching any graphics libraries).</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You’ll find the complete source code here: <a href="https://github.com/letsreinventthewheel/doomfire">doomfire</a></p>
+<h3><a href="#how-it-works" aria-hidden="true" class="anchor" id="how-it-works"></a><strong>How it works:</strong></h3>
+<ul>
+<li><strong>Simulate</strong> a fire buffer where each pixel’s intensity is updated using random decay and spreading.</li>
+<li><strong>Render</strong> each frame as a raw PPM (P6) image, writing directly to stdout.</li>
+<li><strong>Display</strong> in real time by piping your program’s output to <code>mpv</code>, which interprets the image stream as a video.</li>
+</ul>
+<p><strong>To run:</strong></p>
+<pre class="language-sh"><span class="source shell bash"><span class="meta function-call shell"><span class="variable function shell">gcc</span></span><span class="meta function-call arguments shell"><span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>std</span><span class="keyword operator assignment option shell">=</span>c11<span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>O3</span><span class="variable parameter option shell"><span class="punctuation definition parameter shell"> -</span>o</span> doomfire doomfire.c</span>
+<span class="meta function-call shell"><span class="variable function shell">./doomfire</span></span> <span class="keyword operator logical pipe shell">|</span> <span class="meta function-call shell"><span class="variable function shell">mpv</span></span><span class="meta function-call arguments shell"> -</span>
+</span></code></pre>
+<blockquote>
+<p>No graphics dependencies, no window management - only <code>mpv</code> as <a href="https://en.wikipedia.org/wiki/Most_valuable_player">MVP</a></p>
+</blockquote>
+<hr />
+<h2><a href="#tweak-and-expand" aria-hidden="true" class="anchor" id="tweak-and-expand"></a>Tweak and Expand</h2>
+<ul>
+<li>Adjust fire size, scaling, and palette to match your aesthetic.</li>
+<li>Overlay fire onto other images, or add simple alpha blending for cool effects.</li>
+<li>Try increasing the scale factor for a more “blocky” fire, or experiment with different color palettes.</li>
+</ul>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<p>If you want to dig deeper, check out these resources:</p>
+<ul>
+<li><a href="https://netpbm.sourceforge.net/doc/ppm.html">PPM Format Documentation</a></li>
+<li><a href="https://fabiensanglard.net/doom_fire_psx/">How Doom Fire Was Done</a></li>
+<li><a href="https://mpv.io/manual/master/">mpv User Guide</a></li>
+</ul>
+<hr />
+<h2><a href="#stay-in-the-loop" aria-hidden="true" class="anchor" id="stay-in-the-loop"></a>Stay in the Loop</h2>
+<p>Have questions or ideas for more coding adventures?
+Drop a comment on the video, or suggest the next project idea you want to reinvent!</p>
+<p>Thanks for following along, and until next time. Keep reinventing!</p>
+]]></content:encoded></item><item><title>Build Your Own RoyalRoad to EPUB Converter</title><link>https://letsreinventthewheel.github.io/blog/royal-road-to-epub</link><description><![CDATA[<p>Learn how to build a simple Python script that scrapes stories from RoyalRoad
 and converts them into EPUB files for offline reading. This beginner friendly
 project uses <code>BeautifulSoup</code>, <code>requests</code>, and <code>EbookLib</code> to walk you through a
 full pipeline from HTML scraping to ebook generation. A perfect start for anyone
