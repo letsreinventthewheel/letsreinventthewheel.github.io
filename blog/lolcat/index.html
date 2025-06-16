@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><title>Terminal Rainbows in Zig: A Colorful cat-like Tool</title><meta charset="utf-8"><meta name="title" content="Terminal Rainbows in Zig: A Colorful cat-like Tool"><meta name="description" content="&lt;p&gt;A small learning project that explores how tools like &lt;code&gt;lolcat&lt;/code&gt; create colorful
+and animated terminal output. This time we use Zig for the first time to add some
+color to our terminal and learn how ANSI escape codes make it all work.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Terminal Rainbows in Zig: A Colorful cat-like Tool</h1><p>Published on <time class="dt-published" datetime="2025-06-17">June 17<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/-Ptmr6KhBQY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>Welcome back to <em>Let’s Reinvent the Wheel</em>.
+In this project, we explore how terminal text effects like rainbow coloring and simple animation work.
+We build a tiny silly Zig program that prints colorful text from stdin.</p>
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<p>This project is all about exploring how colorful terminal output works:</p>
+<ul>
+<li>How to manually generate ANSI escape codes for 24 bit color</li>
+<li>How to apply RGB gradients across characters</li>
+<li>How to read and process stdin in Zig</li>
+<li>How to animate terminal output using carriage returns and redraws</li>
+</ul>
+<p>We implement all of this with Zig’s standard library, keeping the code small, clean, and educational.</p>
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You’ll find the complete source code here: <a href="https://github.com/letsreinventthewheel/silly-cat">silly-cat</a></p>
+<h3><a href="#how-it-works" aria-hidden="true" class="anchor" id="how-it-works"></a>How It Works</h3>
+<h4><a href="#reading-input-from-stdin" aria-hidden="true" class="anchor" id="reading-input-from-stdin"></a>Reading Input from Stdin</h4>
+<p><code>silly-cat</code> reads from standard input line by line using Zig’s <code>streamUntilDelimiter</code>, capturing one line at a time into a buffer:</p>
+<pre class="language-zig"><span class="source zig"><span class="variable zig">reader</span>.<span class="variable function zig">streamUntilDelimiter</span><span class="punctuation section parens begin zig">(</span><span class="variable zig">fbs</span>.<span class="variable function zig">writer</span><span class="punctuation section parens begin zig">(</span><span class="punctuation section parens end zig">)</span><span class="punctuation separator zig">,</span> <span class="string quoted single zig">&#39;<span class="constant character escape newline zig">\n</span>&#39;</span><span class="punctuation separator zig">,</span> <span class="variable zig">fbs</span>.<span class="variable zig">buffer</span>.<span class="variable zig">len</span><span class="punctuation section parens end zig">)</span>
+</span></code></pre>
+<p>This makes it compatible with piped input like:</p>
+<pre class="language-sh"><span class="source shell bash"><span class="meta function-call shell"><span class="support function echo shell">echo</span></span><span class="meta function-call arguments shell"> <span class="string quoted double shell"><span class="punctuation definition string begin shell">&quot;</span>hello world<span class="punctuation definition string end shell">&quot;</span></span></span> <span class="keyword operator logical pipe shell">|</span> <span class="meta function-call shell"><span class="variable function shell">silly-cat</span></span>
+</span></code></pre>
+<p>Each line is processed independently, with a short delay between lines to support the animation effect.</p>
+<hr />
+<h4><a href="#generating-rainbow-colors" aria-hidden="true" class="anchor" id="generating-rainbow-colors"></a>Generating Rainbow Colors</h4>
+<p>For every character on the line, <code>silly-cat</code> calculates a rainbow color using a sine wave offset:</p>
+<pre class="language-zig"><span class="source zig"><span class="storage modifier zig">const</span> <span class="variable zig">red</span>   <span class="keyword operator assignment zig">=</span> <span class="support function zig">@sin</span><span class="punctuation section parens begin zig">(</span><span class="variable zig">p</span> <span class="keyword operator arithmetic zig">/</span> <span class="constant numeric float zig">10.0</span><span class="punctuation section parens end zig">)</span> <span class="keyword operator arithmetic zig">*</span> <span class="constant numeric float zig">127.0</span> <span class="keyword operator arithmetic zig">+</span> <span class="constant numeric float zig">128.0</span><span class="punctuation terminator zig">;</span>
+<span class="storage modifier zig">const</span> <span class="variable zig">green</span> <span class="keyword operator assignment zig">=</span> <span class="support function zig">@sin</span><span class="punctuation section parens begin zig">(</span><span class="variable zig">p</span> <span class="keyword operator arithmetic zig">/</span> <span class="constant numeric float zig">10.0</span> <span class="keyword operator arithmetic zig">+</span> 2π<span class="keyword operator arithmetic zig">/</span><span class="constant numeric integer zig">3</span><span class="punctuation section parens end zig">)</span> <span class="keyword operator arithmetic zig">*</span> <span class="constant numeric float zig">127.0</span> <span class="keyword operator arithmetic zig">+</span> <span class="constant numeric float zig">128.0</span><span class="punctuation terminator zig">;</span>
+<span class="storage modifier zig">const</span> <span class="variable zig">blue</span>  <span class="keyword operator assignment zig">=</span> <span class="support function zig">@sin</span><span class="punctuation section parens begin zig">(</span><span class="variable zig">p</span> <span class="keyword operator arithmetic zig">/</span> <span class="constant numeric float zig">10.0</span> <span class="keyword operator arithmetic zig">+</span> 4π<span class="keyword operator arithmetic zig">/</span><span class="constant numeric integer zig">3</span><span class="punctuation section parens end zig">)</span> <span class="keyword operator arithmetic zig">*</span> <span class="constant numeric float zig">127.0</span> <span class="keyword operator arithmetic zig">+</span> <span class="constant numeric float zig">128.0</span><span class="punctuation terminator zig">;</span>
+</span></code></pre>
+<p>This produces a smooth hue transition across characters, giving it a “rainbow stream” appearance.</p>
+<p>The <code>position</code> of the character and a global <code>offset</code> (which changes slightly between lines) are used to animate the color wave over time.</p>
+<hr />
+<h4><a href="#writing-colored-output" aria-hidden="true" class="anchor" id="writing-colored-output"></a>Writing Colored Output</h4>
+<p>Each character is wrapped with a 24 bit ANSI color escape sequence:</p>
+<pre class="language-zig"><span class="source zig"><span class="keyword control conditional zig">try</span> <span class="variable zig">writer</span>.<span class="variable function zig">print</span><span class="punctuation section parens begin zig">(</span><span class="string quoted double zig">&quot;<span class="constant character escape hexidecimal zig">\x1b</span>[38;2;{d};{d};{d}m{c}&quot;</span><span class="punctuation separator zig">,</span> .<span class="punctuation section braces begin zig">{</span> <span class="variable zig">color</span>.<span class="variable zig">r</span><span class="punctuation separator zig">,</span> <span class="variable zig">color</span>.<span class="variable zig">g</span><span class="punctuation separator zig">,</span> <span class="variable zig">color</span>.<span class="variable zig">b</span><span class="punctuation separator zig">,</span> <span class="variable zig">c</span> <span class="punctuation section braces end zig">}</span><span class="punctuation section parens end zig">)</span><span class="punctuation terminator zig">;</span>
+</span></code></pre>
+<p>At the end of each line, it resets the color with <code>\x1b[0m</code>.</p>
+<p>The cursor is hidden at the start (<code>\x1b[?25l</code>) to reduce flicker during animation, and re-shown at the end (<code>\x1b[?25h</code>).</p>
+<hr />
+<h4><a href="#animation-control" aria-hidden="true" class="anchor" id="animation-control"></a>Animation Control</h4>
+<p>The animation is handled by a short sleep (<code>std.time.sleep</code>) between line renders, combined with a moving <code>offset</code> in the color calculation.
+This creates a subtle horizontal shimmer effect across multiple lines.</p>
+<h2><a href="#tweak-and-expand" aria-hidden="true" class="anchor" id="tweak-and-expand"></a>Tweak and Expand</h2>
+<ul>
+<li><strong>UTF-8 support</strong>: Right now, the code assumes single byte ASCII characters. Supporting multibyte UTF-8 characters (like emojis or accented letters) requires iterating over codepoints correctly.</li>
+<li><strong>File input</strong>: Currently, input is read only from stdin. Add support for reading from files (via command line arguments).</li>
+<li><strong>Multiple animation styles</strong>: You could implement vertical “wiggle”, character jitter, or scrolling.</li>
+<li><strong>Custom gradients</strong>: Try using HSV interpolation, or let users pass in a color palette.</li>
+</ul>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://notes.burke.libbey.me/ansi-escape-codes/">Everything you never wanted to know about ANSI escape codes</a></li>
+<li><a href="https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797">ANSI Escape Codes GIST</a></li>
+<li><a href="https://github.com/busyloop/lolcat">lolcat</a> - a terminal colorizer that inspired this project</li>
+<li><a href="https://graphtoy.com/">graphtoy</a> - easy graphing of functions</li>
+<li><a href="https://ziglang.org/documentation/master/">Zig language documentation</a></li>
+</ul>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
