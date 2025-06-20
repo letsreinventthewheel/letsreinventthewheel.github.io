@@ -1,4 +1,3 @@
-Sitemap: https://letsreinventthewheel.github.io/sitemap.xml
-
 User-agent: *
-Disallow:
+Allow: /
+Sitemap: https://letsreinventthewheel.github.io/sitemap.xml
