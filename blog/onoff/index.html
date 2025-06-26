@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><title>0n0FF: A Flipping Puzzle in React</title><meta charset="utf-8"><meta name="title" content="0n0FF: A Flipping Puzzle in React"><meta name="description" content="&lt;p&gt;A compact logic puzzle where every click flips an entire row and column.
+Using &lt;code&gt;TypeScript&lt;/code&gt;, &lt;code&gt;React&lt;/code&gt;, &lt;code&gt;Context&lt;/code&gt;, and &lt;code&gt;Reducers&lt;/code&gt;, we implement the game
+from scratch with a clean, minimal UI and satisfying interactions&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>0n0FF: A Flipping Puzzle in React</h1><p>Published on <time class="dt-published" datetime="2025-06-26">June 26<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/2N2PKKOFhkw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>Welcome back to <em>Let’s Reinvent the Wheel</em>.</p>
+<p>In this project we build a minimalist logic puzzle called <code>0n0FF</code> using <code>React</code> and <code>TypeScript</code>.
+A 4x4 grid game where each move flips a row and column, and the goal is to turn all tiles
+green with as few moves as possible.</p>
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<p>By the end of this project you’ll understand how to:</p>
+<ul>
+<li><strong>Model puzzle logic</strong> using a reducer based state machine in React.</li>
+<li><strong>Design a grid based toggle mechanic</strong> that affects rows and columns.</li>
+<li><strong>Leverage React Context</strong> for clean and reusable global state.</li>
+<li><strong>Style interactive components</strong> with CSS for feedback and animations.</li>
+</ul>
+<p>Whether you’re learning React, exploring puzzle mechanics, or just love brain teasers, this mini project packs a lot of value in a small footprint.</p>
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You’ll find the complete source code here: <a href="https://github.com/letsreinventthewheel/0n0ff-puzzle">0n0ff-puzzle</a></p>
+<h3><a href="#how-it-works" aria-hidden="true" class="anchor" id="how-it-works"></a>How It Works</h3>
+<p>This project is written in <strong>React + TypeScript</strong>, styled with simple <strong>CSS Modules</strong>, and designed to be a compact and fun codebase to explore UI state management and puzzle logic.</p>
+<p>We manage game state with a reducer (<code>useReducer</code>) and isolate logic in a <code>GameContext</code> to keep components clean and focused.</p>
+<h4><a href="#game-mechanics" aria-hidden="true" class="anchor" id="game-mechanics"></a>Game Mechanics</h4>
+<ul>
+<li>A 4x4 grid of cells.</li>
+<li>Each cell is either <strong>green (on)</strong> or <strong>red (off)</strong>.</li>
+<li>Clicking a cell toggles the entire <strong>row</strong> and the entire <strong>column</strong></li>
+<li>Goal: Make <strong>every cell green</strong>.</li>
+</ul>
+<h4><a href="#game-logic-breakdown" aria-hidden="true" class="anchor" id="game-logic-breakdown"></a>Game Logic Breakdown</h4>
+<pre class="language-ts"><span class="source ts"><span class="meta var expr ts"><span class="storage type ts">const</span> <span class="meta var-single-variable expr ts"><span class="meta definition variable ts"><span class="variable other constant ts"><span class="entity name function ts">toggleCell</span></span></span> </span><span class="keyword operator assignment ts">=</span><span class="meta arrow ts"> <span class="meta parameters ts"><span class="punctuation definition parameters begin ts">(</span><span class="variable parameter ts">grid</span><span class="punctuation separator parameter ts">,</span> <span class="variable parameter ts">row</span><span class="punctuation separator parameter ts">,</span> <span class="variable parameter ts">column</span><span class="punctuation definition parameters end ts">)</span></span> </span><span class="meta arrow ts"><span class="storage type function arrow ts">=&gt;</span> <span class="meta block ts"><span class="punctuation definition block ts">{</span>
+  <span class="meta var expr ts"><span class="storage type ts">const</span> <span class="meta var-single-variable expr ts"><span class="meta definition variable ts"><span class="variable other constant ts">newGrid</span></span> </span><span class="keyword operator assignment ts">=</span> <span class="meta function-call ts"><span class="entity name function ts">structuredClone</span></span><span class="meta brace round ts">(</span><span class="variable other readwrite ts">grid</span><span class="meta brace round ts">)</span></span><span class="punctuation terminator statement ts">;</span>
+  <span class="keyword control loop ts">for</span> <span class="meta brace round ts">(</span><span class="meta var expr ts"><span class="storage type ts">let</span> <span class="meta var-single-variable expr ts"><span class="meta definition variable ts"><span class="variable other readwrite ts">r</span></span> </span><span class="keyword operator assignment ts">=</span> <span class="constant numeric decimal ts">0</span></span><span class="punctuation terminator statement ts">;</span> <span class="variable other readwrite ts">r</span> <span class="keyword operator relational ts">&lt;</span> <span class="constant numeric decimal ts">4</span><span class="punctuation terminator statement ts">;</span> <span class="variable other readwrite ts">r</span><span class="keyword operator increment ts">++</span><span class="meta brace round ts">)</span> <span class="meta block ts"><span class="punctuation definition block ts">{</span>
+    <span class="keyword control loop ts">for</span> <span class="meta brace round ts">(</span><span class="meta var expr ts"><span class="storage type ts">let</span> <span class="meta var-single-variable expr ts"><span class="meta definition variable ts"><span class="variable other readwrite ts">c</span></span> </span><span class="keyword operator assignment ts">=</span> <span class="constant numeric decimal ts">0</span></span><span class="punctuation terminator statement ts">;</span> <span class="variable other readwrite ts">c</span> <span class="keyword operator relational ts">&lt;</span> <span class="constant numeric decimal ts">4</span><span class="punctuation terminator statement ts">;</span> <span class="variable other readwrite ts">c</span><span class="keyword operator increment ts">++</span><span class="meta brace round ts">)</span> <span class="meta block ts"><span class="punctuation definition block ts">{</span>
+      <span class="keyword control conditional ts">if</span> <span class="meta brace round ts">(</span><span class="variable other readwrite ts">r</span> <span class="keyword operator comparison ts">===</span> <span class="variable other readwrite ts">row</span> <span class="keyword operator logical ts">||</span> <span class="variable other readwrite ts">c</span> <span class="keyword operator comparison ts">===</span> <span class="variable other readwrite ts">column</span><span class="meta brace round ts">)</span> <span class="meta block ts"><span class="punctuation definition block ts">{</span>
+        <span class="variable other readwrite ts">newGrid</span><span class="meta array literal ts"><span class="meta brace square ts">[</span><span class="variable other readwrite ts">r</span><span class="meta brace square ts">]</span></span><span class="meta array literal ts"><span class="meta brace square ts">[</span><span class="variable other readwrite ts">c</span><span class="meta brace square ts">]</span></span> <span class="keyword operator assignment ts">=</span> <span class="keyword operator logical ts">!</span><span class="variable other readwrite ts">newGrid</span><span class="meta array literal ts"><span class="meta brace square ts">[</span><span class="variable other readwrite ts">r</span><span class="meta brace square ts">]</span></span><span class="meta array literal ts"><span class="meta brace square ts">[</span><span class="variable other readwrite ts">c</span><span class="meta brace square ts">]</span></span><span class="punctuation terminator statement ts">;</span>
+      <span class="punctuation definition block ts">}</span></span>
+    <span class="punctuation definition block ts">}</span></span>
+  <span class="punctuation definition block ts">}</span></span>
+  <span class="keyword control flow ts">return</span> <span class="variable other readwrite ts">newGrid</span><span class="punctuation terminator statement ts">;</span>
+<span class="punctuation definition block ts">}</span></span></span></span><span class="punctuation terminator statement ts">;</span>
+</span></code></pre>
+<p>Each click affects the full row and column: a mechanic that quickly scrambles your carefully laid plans 😅</p>
+<h4><a href="#why-this-puzzle" aria-hidden="true" class="anchor" id="why-this-puzzle"></a>Why This Puzzle?</h4>
+<p>The challenge is subtle:</p>
+<ul>
+<li>It <em>looks</em> easy.</li>
+<li>But the interactions are non trivial.</li>
+<li>Requires <strong>planning, prediction, and experimentation</strong>.</li>
+</ul>
+<p>It’s also a <strong>great starter puzzle</strong> if you want to learn state management in React beyond <code>useState</code>.</p>
+<h2><a href="#future-improvements" aria-hidden="true" class="anchor" id="future-improvements"></a>Future Improvements</h2>
+<ul>
+<li>Add solver to calculate optimal moves count</li>
+<li>Track win history</li>
+<li>Support larger grid sizes (e.g. 5x5).</li>
+<li>Add sound or haptic feedback.</li>
+</ul>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://react.dev/learn/scaling-up-with-reducer-and-context">React: Scaling Up with Reducer and Context</a></li>
+<li><a href="https://2048game.com/">2048 game</a> - UI inspiration</li>
+</ul>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
