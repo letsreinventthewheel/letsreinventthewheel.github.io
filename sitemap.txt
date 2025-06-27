@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/onoff-solver
 https://letsreinventthewheel.github.io/blog/onoff
 https://letsreinventthewheel.github.io/blog/solving-boggle-backwards
 https://letsreinventthewheel.github.io/blog/lolcat
