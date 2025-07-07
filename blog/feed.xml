@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 27 Jun 2025 09:37:27 +0000</lastBuildDate><item><title>0n0FF: Teaching a Puzzle to Solve Itself</title><link>https://letsreinventthewheel.github.io/blog/onoff-solver</link><description><![CDATA[<p>We extend 0n0FF with a real time solver powered by Breadth First Search (BFS) and
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Mon, 07 Jul 2025 07:42:46 +0000</lastBuildDate><item><title>Quadtree Art, Part 1: Setting Up the Canvas</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl</link><description><![CDATA[<p>Setting up rendering pipeline using SDL3 and stb_image. We load an image, create
+a framebuffer and display the result using a texture. This part lays the groundwork
+for interactive image subdivision in future parts.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl</guid><pubDate>Mon, 07 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In this first part we lay the groundwork for the quadtree art project.</p>
+<p>We focus on setting up a basic SDL environment, a framebuffer and loading an image using <code>stb_image.h</code>. There is no subdivision logic yet. We are simply preparing to draw.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<ul>
+<li>How to set up a window, renderer, and texture using SDL3</li>
+<li>How to load an image using <code>stb_image.h</code></li>
+<li>How to allocate and update a manual framebuffer</li>
+<li>The foundation for building an interactive image renderer in C23</li>
+</ul>
+<hr />
+<h2><a href="#why-it-matters" aria-hidden="true" class="anchor" id="why-it-matters"></a>Why It Matters</h2>
+<p>Every graphics project needs a solid foundation.</p>
+<p>This part ensures we can:</p>
+<ul>
+<li>Read an image from disk</li>
+<li>Display a dynamic texture</li>
+<li>Prepare for manual pixel drawing using a framebuffer</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/quadtree-art">quadtree-art</a></p>
+<p>If everything is set up correctly you should see the input image drawn using the framebuffer.</p>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://libsdl.org/">SDL3</a></li>
+<li><a href="https://wiki.libsdl.org/SDL3/Tutorials/FrontPage">SDL tutorials</a></li>
+</ul>
+<hr />
+<h2><a href="#next-up" aria-hidden="true" class="anchor" id="next-up"></a>Next Up</h2>
+<p>In part 2 we will build the actual quadtree by subdividing the image region by region.</p>
+]]></content:encoded></item><item><title>0n0FF: Teaching a Puzzle to Solve Itself</title><link>https://letsreinventthewheel.github.io/blog/onoff-solver</link><description><![CDATA[<p>We extend 0n0FF with a real time solver powered by Breadth First Search (BFS) and
 bit manipulation. Learn how to compute perfect puzzle solutions and guide players
 with subtle visual hints - all in <code>React</code> and <code>TypeScript</code>.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/onoff-solver</guid><pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/onoff/">previous</a> episode we built <strong>0n0FF</strong>, a minimalist tile flipping puzzle game in <code>React</code> and <code>TypeScript</code>. This time we’re giving our game a brain.</p>

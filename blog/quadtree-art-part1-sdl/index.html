@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en"><head><title>Quadtree Art, Part 1: Setting Up the Canvas</title><meta charset="utf-8"><meta name="title" content="Quadtree Art, Part 1: Setting Up the Canvas"><meta name="description" content="&lt;p&gt;Setting up rendering pipeline using SDL3 and stb_image. We load an image, create
+a framebuffer and display the result using a texture. This part lays the groundwork
+for interactive image subdivision in future parts.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Quadtree Art, Part 1: Setting Up the Canvas</h1><p>Published on <time class="dt-published" datetime="2025-07-07">July  7<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/lCIzISWEVok" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In this first part we lay the groundwork for the quadtree art project.</p>
+<p>We focus on setting up a basic SDL environment, a framebuffer and loading an image using <code>stb_image.h</code>. There is no subdivision logic yet. We are simply preparing to draw.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<ul>
+<li>How to set up a window, renderer, and texture using SDL3</li>
+<li>How to load an image using <code>stb_image.h</code></li>
+<li>How to allocate and update a manual framebuffer</li>
+<li>The foundation for building an interactive image renderer in C23</li>
+</ul>
+<hr />
+<h2><a href="#why-it-matters" aria-hidden="true" class="anchor" id="why-it-matters"></a>Why It Matters</h2>
+<p>Every graphics project needs a solid foundation.</p>
+<p>This part ensures we can:</p>
+<ul>
+<li>Read an image from disk</li>
+<li>Display a dynamic texture</li>
+<li>Prepare for manual pixel drawing using a framebuffer</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/quadtree-art">quadtree-art</a></p>
+<p>If everything is set up correctly you should see the input image drawn using the framebuffer.</p>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://libsdl.org/">SDL3</a></li>
+<li><a href="https://wiki.libsdl.org/SDL3/Tutorials/FrontPage">SDL tutorials</a></li>
+</ul>
+<hr />
+<h2><a href="#next-up" aria-hidden="true" class="anchor" id="next-up"></a>Next Up</h2>
+<p>In part 2 we will build the actual quadtree by subdividing the image region by region.</p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
