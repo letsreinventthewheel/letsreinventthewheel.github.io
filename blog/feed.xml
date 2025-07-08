@@ -1,4 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Mon, 07 Jul 2025 07:42:46 +0000</lastBuildDate><item><title>Quadtree Art, Part 1: Setting Up the Canvas</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl</link><description><![CDATA[<p>Setting up rendering pipeline using SDL3 and stb_image. We load an image, create
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 08 Jul 2025 07:47:21 +0000</lastBuildDate><item><title>Quadtree Art, Part 2: Linear Subdivision with Quads</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear</link><description><![CDATA[<p>We implement basic image subdivision using a dynamic array to manage quads. The result
+looks interesting but without prioritization we end up spending time on regions that
+barely matter. This part sets the stage for a smarter approach in Part 3.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear</guid><pubDate>Tue, 08 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p><a href="https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl/">With the SDL and framebuffer setup in place</a> we now dive into subdividing the image.</p>
+<p>In this second part we build a basic quadtree system using a dynamic array (essentially a queue). Each quad is subdivided into four children and those are appended to the array.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<ul>
+<li>How to define and manage quads covering image regions</li>
+<li>How to compute RGB histograms and calculate average color and error</li>
+<li>How to split image regions recursively using a dynamic array (via <code>stb_ds.h</code>)</li>
+<li>Why naive non-prioritized subdivision can lead to wasted effort</li>
+<li>How visual structure begins to emerge even from simple logic</li>
+</ul>
+<hr />
+<h2><a href="#whats-missing" aria-hidden="true" class="anchor" id="whats-missing"></a>What’s Missing</h2>
+<p>This method uses <strong>no prioritization</strong>.</p>
+<p>We pick the next quad from the array in order, regardless of whether it has high or low color variation. This means:</p>
+<ul>
+<li>We waste effort subdividing flat or unimportant regions</li>
+<li>High detail areas may not be refined early</li>
+<li>Rendering is “slower” (results appear not as fast) and less efficient</li>
+</ul>
+<p>Still it creates a pleasing and abstract reveal of the image.</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/quadtree-art">quadtree-art</a></p>
+<p>After building and running the project you will see your image rendered as large color block.
+Press any key to progressively split the image into smaller quads. Each quad is rendered with
+its average color. There is no prioritization yet, so the image is refined in order revealing
+detail bit by bit across the entire canvas.</p>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Quadtree">Quadtree</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Weighted_arithmetic_mean">Weighted arithmetic mean</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel’s correction</a></li>
+<li><a href="https://wiki.libsdl.org/SDL3/BestKeyboardPractices">Best keyboard practices in SDL3</a></li>
+</ul>
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<ul>
+<li><a href="https://github.com/fogleman/Quads">Quads by Michael Fogleman</a> - original idea</li>
+</ul>
+<hr />
+<h2><a href="#next-up" aria-hidden="true" class="anchor" id="next-up"></a>Next Up</h2>
+<p>In the final part we introduce a <strong>min-heap</strong> priority queue to guide the subdivision process by error and area. The result is much more coherent and satisfying.</p>
+]]></content:encoded></item><item><title>Quadtree Art, Part 1: Setting Up the Canvas</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl</link><description><![CDATA[<p>Setting up rendering pipeline using SDL3 and stb_image. We load an image, create
 a framebuffer and display the result using a texture. This part lays the groundwork
 for interactive image subdivision in future parts.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl</guid><pubDate>Mon, 07 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In this first part we lay the groundwork for the quadtree art project.</p>
@@ -29,6 +75,11 @@ for interactive image subdivision in future parts.</p>
 <ul>
 <li><a href="https://libsdl.org/">SDL3</a></li>
 <li><a href="https://wiki.libsdl.org/SDL3/Tutorials/FrontPage">SDL tutorials</a></li>
+</ul>
+<hr />
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<ul>
+<li><a href="https://github.com/fogleman/Quads">Quads by Michael Fogleman</a> - original idea</li>
 </ul>
 <hr />
 <h2><a href="#next-up" aria-hidden="true" class="anchor" id="next-up"></a>Next Up</h2>

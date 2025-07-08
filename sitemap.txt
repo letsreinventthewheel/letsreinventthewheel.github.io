@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear
 https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl
 https://letsreinventthewheel.github.io/blog/onoff-solver
 https://letsreinventthewheel.github.io/blog/onoff
