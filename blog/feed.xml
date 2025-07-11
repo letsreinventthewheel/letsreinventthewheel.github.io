@@ -1,4 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 08 Jul 2025 07:47:21 +0000</lastBuildDate><item><title>Quadtree Art, Part 2: Linear Subdivision with Quads</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear</link><description><![CDATA[<p>We implement basic image subdivision using a dynamic array to manage quads. The result
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 11 Jul 2025 11:18:33 +0000</lastBuildDate><item><title>Quadtree Art, Part 3: Prioritized Subdivision with Binary Heap</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part3-heap</link><description><![CDATA[<p>In this final part we introduce a priority queue to guide image subdivision based on color
+error and area. The result is a smarter and faster rendering process that focuses effort
+where it visually matters most.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/quadtree-art-part3-heap</guid><pubDate>Fri, 11 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p><a href="https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear/">Previously</a> we built a basic subdivision system that linearly split image regions using a dynamic array. While it worked visually, it treated all quads equally (regardless of how much visual detail they contained).</p>
+<p>In this final part we fix the biggest issue: treating all quads equally.</p>
+<p>We introduce a <strong>priority queue</strong> using a minimum heap that scores each quad based on color error and area. This allows us to render the image more intelligently, refining the most visually important regions first.</p>
+<hr />
+<h2><a href="#what-youll-learn" aria-hidden="true" class="anchor" id="what-youll-learn"></a>What You’ll Learn</h2>
+<ul>
+<li>How to implement a min-heap using <code>stb_ds</code> dynamic arrays</li>
+<li>How to define a score based on color error and region area</li>
+<li>How to use the heap to always split the most important quad next</li>
+<li>How this small change results in better visual quality</li>
+<li>How to limit window size for large images while keeping aspect ratio</li>
+</ul>
+<hr />
+<h2><a href="#what-it-does" aria-hidden="true" class="anchor" id="what-it-does"></a>What It Does</h2>
+<ul>
+<li>Each quad gets a score:
+<pre><span class="text plain">score = -error × (area ** 0.25) + (is_leaf ? 1000000 : 0)
+</span></code></pre>
+</li>
+<li>Quads are stored in a min-heap based on this score</li>
+<li>On each key press, the highest priority quad is split</li>
+<li>The image now refines in a structured and intentional way</li>
+</ul>
+<hr />
+<h2><a href="#why-it-works-better" aria-hidden="true" class="anchor" id="why-it-works-better"></a>Why It Works Better</h2>
+<ul>
+<li>Large and high-error regions get split first</li>
+<li>Flat or tiny regions are ignored or delayed</li>
+<li>Rendering looks smarter and converges faster</li>
+<li>Visually the image appears to “come into focus”</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/quadtree-art">quadtree-art</a></p>
+<hr />
+<h2><a href="#final-thoughts" aria-hidden="true" class="anchor" id="final-thoughts"></a>Final Thoughts</h2>
+<p>What began as a simple recursive drawing routine is now a guided and error aware rendering system. This last step feels like the quadtree is actively <em>seeing</em>: prioritizing what deserves detail.</p>
+<p>A small data structure change, a big leap in clarity.</p>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Binary_heap">Binary Heap</a></li>
+<li><a href="https://www.youtube.com/watch?v=koyuy564TZ8">A&amp;DS S01E02. Data structures. Binary Heap. Heap sort</a></li>
+</ul>
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<ul>
+<li><a href="https://github.com/fogleman/Quads">Quads by Michael Fogleman</a> - original idea</li>
+</ul>
+]]></content:encoded></item><item><title>Quadtree Art, Part 2: Linear Subdivision with Quads</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear</link><description><![CDATA[<p>We implement basic image subdivision using a dynamic array to manage quads. The result
 looks interesting but without prioritization we end up spending time on regions that
 barely matter. This part sets the stage for a smarter approach in Part 3.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/quadtree-art-part2-linear</guid><pubDate>Tue, 08 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p><a href="https://letsreinventthewheel.github.io/blog/quadtree-art-part1-sdl/">With the SDL and framebuffer setup in place</a> we now dive into subdividing the image.</p>
