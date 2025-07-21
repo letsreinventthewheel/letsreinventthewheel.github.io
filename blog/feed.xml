@@ -1,8 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 18 Jul 2025 14:19:05 +0000</lastBuildDate><item><title>Snake Rewind: Episode 1 - Gridlocked Pixels</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep1</link><description><![CDATA[<p>In the first episode of Snake Rewind we lay the groundwork for a retro inspired Snake
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Mon, 21 Jul 2025 10:33:33 +0000</lastBuildDate><item><title>Snake Rewind: Episode 2 – Slither With Style</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</link><description><![CDATA[<p>In this episode we breathe life into the grid by implementing smooth step based snake
+movement and clean keyboard input handling - laying the groundwork for gameplay mechanics
+to come.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</guid><pubDate>Mon, 21 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In this second entry of the <strong>Snake Rewind</strong> devlog series we bring the grid to life. We are adding player controlled snake movement using step based logic and clean keyboard input handling.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented <strong>grid based movement</strong> that updates on a fixed timer interval</li>
+<li>Handled directional input with <strong>arrow keys</strong> including turn buffering</li>
+<li>Kept the snake moving smoothly in one direction until a valid turn is made</li>
+<li>Introduced a simple <code>Snake</code> struct to track position, direction and tiles</li>
+<li>Laid the foundation for growing the snake and introducing game mechanics</li>
+</ul>
+<p>Instead of animating per frame we step the snake every 100 milliseconds. This keeps gameplay deterministic and perfectly grid aligned.</p>
+<h2><a href="#design-highlights" aria-hidden="true" class="anchor" id="design-highlights"></a>Design Highlights</h2>
+<ul>
+<li>Movement is time based, not tied to framerate (fps)</li>
+<li>Turns are buffered when valid, preventing 180° reversals</li>
+<li>Snake wraps around screen edges</li>
+<li>Directional input is decoupled from movement logic</li>
+</ul>
+<h2><a href="#lessons-learned" aria-hidden="true" class="anchor" id="lessons-learned"></a>Lessons Learned</h2>
+<ul>
+<li>Separating input handling from movement updates keeps logic clean</li>
+<li>Using a <code>stepTimer</code> helps us keep gameplay speed consistent and independent of framerate (fps)</li>
+<li>Representing the snake as a list of tiles (with the head always at index 0) makes future logic (collision, food, clones) simple and predictable</li>
+</ul>
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 3</a> we’ll add the <strong>food system</strong> and make the snake grow when it eats, setting the stage for our clone mechanic to follow.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 1 - Gridlocked Pixels</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep1</link><description><![CDATA[<p>In the first episode of Snake Rewind we lay the groundwork for a retro inspired Snake
 game by building a crisp pixel perfect tile grid using Raylib. This foundational system
 sets the stage for everything to come: from clone mechanics to shader powered visuals.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep1</guid><pubDate>Fri, 18 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>Welcome to the <strong>first devlog entry</strong> for <em>Snake Rewind</em>: a retro inspired, shader fueled twist on the classic Snake game built using <strong>Raylib</strong> in <strong>C</strong>.</p>
-<h2><a href="#-what-we-covered" aria-hidden="true" class="anchor" id="-what-we-covered"></a>🧱 What We Covered</h2>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
 <p>In Episode 1 we focused on building the <strong>pixel perfect game grid</strong> that powers everything in Snake Rewind:</p>
 <ul>
 <li>Setting up a fixed resolution <strong>framebuffer</strong></li>
@@ -12,7 +42,7 @@ sets the stage for everything to come: from clone mechanics to shader powered vi
 </ul>
 <p>This grid isn’t just a background. It’s the foundation for the snake, the food, the clones and every visual effect we’ll be layering on top.
 Getting it right at the start means everything stays crisp and deterministic across all resolutions.</p>
-<h2><a href="#-why-this-matters" aria-hidden="true" class="anchor" id="-why-this-matters"></a>🎯 Why This Matters</h2>
+<h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
 <p>Snake Rewind isn’t just a remake. It’s a step up. We’re building this from scratch but pushing it far past beginner level by integrating:</p>
 <ul>
 <li><strong>Clone mechanics</strong> (your past self becomes your enemy)</li>
@@ -22,7 +52,7 @@ Getting it right at the start means everything stays crisp and deterministic acr
 <li><strong>Cinematic shaders and sound polish</strong> (hopefully)</li>
 </ul>
 <p>But it all starts with one thing: a clean, scalable and pixel perfect grid.</p>
-<h2><a href="#️-code-highlights" aria-hidden="true" class="anchor" id="️-code-highlights"></a>🛠️ Code Highlights</h2>
+<h2><a href="#code-highlights" aria-hidden="true" class="anchor" id="code-highlights"></a>Code Highlights</h2>
 <p>You’ll find the complete source code here: <a href="https://github.com/letsreinventthewheel/snake-rewind">snake-rewind</a></p>
 <ul>
 <li><code>RenderTexture2D</code> with internal game resolution</li>
@@ -32,8 +62,8 @@ Getting it right at the start means everything stays crisp and deterministic acr
 </ul>
 <h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
 <p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
-<h2><a href="#-whats-next" aria-hidden="true" class="anchor" id="-whats-next"></a>🔜 What’s Next?</h2>
-<p>In <a href="#">Episode 2</a> we’ll make the grid come alive by implementing <strong>snake movement</strong> and <strong>input handling</strong>.
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep2/">Episode 2</a> we’ll make the grid come alive by implementing <strong>snake movement</strong> and <strong>input handling</strong>.
 Get ready to slither, wrap and eventually grow.</p>
 ]]></content:encoded></item><item><title>Quadtree Art, Part 3: Prioritized Subdivision with Binary Heap</title><link>https://letsreinventthewheel.github.io/blog/quadtree-art-part3-heap</link><description><![CDATA[<p>In this final part we introduce a priority queue to guide image subdivision based on color
 error and area. The result is a smarter and faster rendering process that focuses effort
