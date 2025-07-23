@@ -1,4 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Mon, 21 Jul 2025 10:33:33 +0000</lastBuildDate><item><title>Snake Rewind: Episode 2 – Slither With Style</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</link><description><![CDATA[<p>In this episode we breathe life into the grid by implementing smooth step based snake
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 24 Jul 2025 08:26:50 +0000</lastBuildDate><item><title>Snake Rewind: Episode 3 - Feeding the Beast</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</link><description><![CDATA[<p>In this episode we introduce food to the game allowing the snake to grow and bringing
+the core gameplay loop to life. It’s a small change that makes a big difference and sets
+the stage for the clone mechanic coming next.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</guid><pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 3 of the Snake Rewind devlog we finally give our snake something to chase: food. This episode introduces the core gameplay loop: moving, eating and growing; and makes the game feel alive for the first time.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented a simple <strong>Food</strong> system that spawns randomly on the grid</li>
+<li>Ensured food only appears on empty (non snake) tiles</li>
+<li>Checked for <strong>head-to-food collision</strong> during the update step</li>
+<li>Triggered <strong>snake growth</strong> when food is eaten</li>
+<li>Refactored movement to support dynamic length</li>
+</ul>
+<p>This introduces the feedback loop that makes Snake a game: player makes a move, something happens and the game state evolves.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Food spawn logic uses a retry loop until it finds an empty tile (simple and effective)</li>
+<li>Snake growth is handled by <strong>increasing its length</strong>, allowing it to retain more of its trail</li>
+<li>Grid based collision checking is fast and intuitive with our tile system</li>
+<li>This sets up the perfect path for spawning <strong>clones</strong> in the next episode</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li><code>Food</code> struct stores position and tile value</li>
+<li>Collision check is done right after <code>SnakeDoStep()</code></li>
+<li>Snake <code>tiles</code> controls growth (no need for timers or delayed flags)</li>
+<li>Food respawns instantly after being eaten</li>
+</ul>
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 4</a> the past catches up - literally. We’ll implement <strong>clones</strong> that retrace your exact path, adding challenge and strategy to what was once just survival.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 2 - Slither With Style</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</link><description><![CDATA[<p>In this episode we breathe life into the grid by implementing smooth step based snake
 movement and clean keyboard input handling - laying the groundwork for gameplay mechanics
 to come.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</guid><pubDate>Mon, 21 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In this second entry of the <strong>Snake Rewind</strong> devlog series we bring the grid to life. We are adding player controlled snake movement using step based logic and clean keyboard input handling.</p>
@@ -27,7 +58,7 @@ to come.</p>
 <h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
 <p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 3</a> we’ll add the <strong>food system</strong> and make the snake grow when it eats, setting the stage for our clone mechanic to follow.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep3/">Episode 3</a> we’ll add the <strong>food system</strong> and make the snake grow when it eats, setting the stage for our clone mechanic to follow.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 1 - Gridlocked Pixels</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep1</link><description><![CDATA[<p>In the first episode of Snake Rewind we lay the groundwork for a retro inspired Snake
 game by building a crisp pixel perfect tile grid using Raylib. This foundational system
 sets the stage for everything to come: from clone mechanics to shader powered visuals.</p>
