@@ -1,7 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 24 Jul 2025 08:26:50 +0000</lastBuildDate><item><title>Snake Rewind: Episode 3 - Feeding the Beast</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</link><description><![CDATA[<p>In this episode we introduce food to the game allowing the snake to grow and bringing
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 29 Jul 2025 10:56:59 +0000</lastBuildDate><item><title>Snake Rewind: Episode 4 - Past Self, Present Danger</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</link><description><![CDATA[<p>In this episode we introduce the clone mechanic: snakes that replay your past moves with
+deadly precision. It is a strategic twist that transforms Snake Rewind from a simple remake
+into a tactical survival challenge.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</guid><pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In the <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep3/">previous episode</a> we gave our snake a purpose: food, growth and the beginnings of a real challenge. Now, in Episode 4, that challenge turns inward. We are introducing a brand new threat: <strong>yourself</strong>! or rather your past self. This is where the clone mechanic comes into play.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Introduced a <strong>global <code>player_path</code> array</strong> to store the player’s movement history</li>
+<li>Added the ability to spawn <strong>clones</strong> that replay the player’s path</li>
+<li>Made each clone operate on a delay using a <code>player_path_idx</code> index into the <code>player_path</code> array</li>
+<li>Created a <code>SnakeClone</code> struct wrapping a <code>Snake</code> with extra data</li>
+<li>Implemented per step logic to grow and animate clones independently</li>
+<li>Added clone decay: every time the player eats food all existing clones shrink by one segment and are removed when they reach length zero</li>
+</ul>
+<p>Every time the player eats food a new clone spawns and begins to <strong>trace the player’s old footsteps</strong>. It’s deterministic, clean and eerily effective at making the player fear their own past.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Clones move based on positions from the <code>player_path</code> array</li>
+<li>The player’s path is updated every movement tick</li>
+<li>All clones are stored in a simple array, updated alongside the player</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li><code>SnakeClone</code> = <code>Snake</code> + <code>player_path_idx</code></li>
+<li><code>Position *player_path</code> stores every step the player takes</li>
+<li>On food pickup: spawn new clone, set <code>player_path_idx = 0</code> and add to <code>game.clones</code></li>
+<li>Also on food pickup: reduce all existing clones’ length by 1</li>
+<li>During update: clones follow the path, shift their own tiles and draw as usual</li>
+</ul>
+<h2><a href="#gameplay-impact" aria-hidden="true" class="anchor" id="gameplay-impact"></a>Gameplay Impact</h2>
+<p>This is the moment where Snake Rewind becomes more than a remake. It is now a strategy game about space, timing and memory. Clones create <strong>risk zones</strong> and slowly turn the grid into a trap.</p>
+<h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
+<p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 5</a> we’ll tie this mechanic into the game loop by implementing <strong>collision detection</strong>, game over logic and a retry prompt - completing the core loop.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 3 - Feeding the Beast</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</link><description><![CDATA[<p>In this episode we introduce food to the game allowing the snake to grow and bringing
 the core gameplay loop to life. It’s a small change that makes a big difference and sets
 the stage for the clone mechanic coming next.</p>
-]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</guid><pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 3 of the Snake Rewind devlog we finally give our snake something to chase: food. This episode introduces the core gameplay loop: moving, eating and growing; and makes the game feel alive for the first time.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</guid><pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep3/">Episode 3</a> of the Snake Rewind devlog we finally give our snake something to chase: food. This episode introduces the core gameplay loop: moving, eating and growing; and makes the game feel alive for the first time.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
 <ul>
 <li>Implemented a simple <strong>Food</strong> system that spawns randomly on the grid</li>
@@ -28,7 +62,7 @@ the stage for the clone mechanic coming next.</p>
 <h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
 <p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 4</a> the past catches up - literally. We’ll implement <strong>clones</strong> that retrace your exact path, adding challenge and strategy to what was once just survival.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep4/">Episode 4</a> the past catches up - literally. We’ll implement <strong>clones</strong> that retrace your exact path, adding challenge and strategy to what was once just survival.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 2 - Slither With Style</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep2</link><description><![CDATA[<p>In this episode we breathe life into the grid by implementing smooth step based snake
 movement and clean keyboard input handling - laying the groundwork for gameplay mechanics
 to come.</p>

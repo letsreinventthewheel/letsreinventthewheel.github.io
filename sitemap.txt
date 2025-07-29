@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/snake-rewind-ep4
 https://letsreinventthewheel.github.io/blog/snake-rewind-ep3
 https://letsreinventthewheel.github.io/blog/snake-rewind-ep2
 https://letsreinventthewheel.github.io/blog/snake-rewind-ep1
