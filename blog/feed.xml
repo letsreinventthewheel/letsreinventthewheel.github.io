@@ -1,7 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 29 Jul 2025 10:56:59 +0000</lastBuildDate><item><title>Snake Rewind: Episode 4 - Past Self, Present Danger</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</link><description><![CDATA[<p>In this episode we introduce the clone mechanic: snakes that replay your past moves with
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 31 Jul 2025 10:03:49 +0000</lastBuildDate><item><title>Snake Rewind: Episode 5 – Snake Ends Here</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</link><description><![CDATA[<p>In this episode we complete the core gameplay loop by adding collision detection, game over
+logic and a restart system. Thus giving the player something to fear and the game real stakes.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</guid><pubDate>Thu, 31 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep4/">previous episode</a> we introduced clones that retrace your every move. This added tension to each step. Now, in Episode 5, we complete the core gameplay loop by introducing <strong>collision detection</strong>, <strong>game over logic</strong> and a <strong>restart flow</strong>. Thus giving the game consequence and closure.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented <strong>self collision</strong>: player dies when colliding with their own body</li>
+<li>Added <strong>clone collision</strong>: player dies when colliding with enemy body</li>
+<li>Created a <strong>game over state</strong> that freezes player input and movement</li>
+<li>Clones continue moving after game over for visual payoff</li>
+<li>Displayed a <strong>“GAME OVER” message</strong> and a <strong>“Press Enter to Restart”</strong> prompt</li>
+<li>Reset the game cleanly on restart with full state reinitialization</li>
+<li>Animation of Game Over overlay (scale and shake)</li>
+</ul>
+<p>This episode gives the player something to fear and a reason to come back for more.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Used <code>game.game_over</code> to gate logic and animation cleanly</li>
+<li>Kept clone motion running after game over for stylistic contrast</li>
+<li>Game over UI was rendered directly into the framebuffer for visual consistency</li>
+<li>Cleaned up state via a <code>RestartGame()</code>, handling all resets</li>
+<li>Basic <code>ScaleEffect</code> and <code>ShakeEffect</code> for game over overlay</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li>Collision detection happens right after <code>SnakeDoStep()</code> (and related clone spawning / reducing)</li>
+<li><code>game.game_over = true</code> halts all player behavior</li>
+<li>Grid fades, scales and shakes using simple timer based animation</li>
+<li>Restart prompt uses Raylib input to detect <code>KEY_ENTER</code> and resets the scene</li>
+<li><code>ScaleEffect</code> instantly increased size of rendered framebuffer and linearly decreases it to normal size</li>
+<li><code>ShakeEffect</code> is a very basic thing that simply randomly displaces the framebuffer horizontally and vertically</li>
+</ul>
+<h2><a href="#gameplay-impact" aria-hidden="true" class="anchor" id="gameplay-impact"></a>Gameplay Impact</h2>
+<p>This is the point where Snake Rewind becomes a game and not just a system. Every food pickup is now a calculated risk, every movement is a step toward survival or doom. The game punishes you for being predictable and rewards smart pathing.</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 6</a> we will work on <strong>score display</strong> and feedback, laying the groundwork for juicy UI and animated responses to player progress.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 4 - Past Self, Present Danger</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</link><description><![CDATA[<p>In this episode we introduce the clone mechanic: snakes that replay your past moves with
 deadly precision. It is a strategic twist that transforms Snake Rewind from a simple remake
 into a tactical survival challenge.</p>
-]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</guid><pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In the <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep3/">previous episode</a> we gave our snake a purpose: food, growth and the beginnings of a real challenge. Now, in Episode 4, that challenge turns inward. We are introducing a brand new threat: <strong>yourself</strong>! or rather your past self. This is where the clone mechanic comes into play.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</guid><pubDate>Tue, 29 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep3/">previous episode</a> we gave our snake a purpose: food, growth and the beginnings of a real challenge. Now, in Episode 4, that challenge turns inward. We are introducing a brand new threat: <strong>yourself</strong>! or rather your past self. This is where the clone mechanic comes into play.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
 <ul>
 <li>Introduced a <strong>global <code>player_path</code> array</strong> to store the player’s movement history</li>
@@ -31,7 +66,7 @@ into a tactical survival challenge.</p>
 <h2><a href="#acknowledgements" aria-hidden="true" class="anchor" id="acknowledgements"></a>Acknowledgements</h2>
 <p><a href="https://sheepolution.itch.io/snake-snake-snake">Snake Snake Snake</a> - Original idea of a Snake clone</p>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 5</a> we’ll tie this mechanic into the game loop by implementing <strong>collision detection</strong>, game over logic and a retry prompt - completing the core loop.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep5/">Episode 5</a> we’ll tie this mechanic into the game loop by implementing <strong>collision detection</strong>, game over logic and a retry prompt - completing the core loop.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 3 - Feeding the Beast</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep3</link><description><![CDATA[<p>In this episode we introduce food to the game allowing the snake to grow and bringing
 the core gameplay loop to life. It’s a small change that makes a big difference and sets
 the stage for the clone mechanic coming next.</p>
