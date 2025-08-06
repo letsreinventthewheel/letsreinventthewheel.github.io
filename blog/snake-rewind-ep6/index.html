@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><title>Snake Rewind: Episode 6 - Flashy Feedback</title><meta charset="utf-8"><meta name="title" content="Snake Rewind: Episode 6 - Flashy Feedback"><meta name="description" content="&lt;p&gt;In this episode we bring the score display to life with animated scaling and rotation. We add
+a satisfying visual feedback every time the player eats food and grows the snake.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Snake Rewind: Episode 6 - Flashy Feedback</h1><p>Published on <time class="dt-published" datetime="2025-08-06">August  6<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/UJjqYjSYftA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In Episode 6 of the Snake Rewind devlog we add a small feature that makes a <strong>huge difference</strong>: animated score text. With just a bit of scaling, rotation and timing our static “LENGTH: N” label becomes a punchy, reactive UI element that enhances the entire game feel.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Added a <code>&quot;LENGTH: N&quot;</code> score label using the arcade font at size 32</li>
+<li>Positioned it top center and adjusted for pixel alignment</li>
+<li>Applied <strong>animated scaling and rotation</strong> when the score increases</li>
+<li>Reset the animation using a timer and <code>lerp</code> to bring it back to normal</li>
+<li>Ensured the visual feedback is tied directly to game events (eating food)</li>
+</ul>
+<p>This kind of micro feedback is what makes Snake Rewind feel responsive and alive.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>UI animations can be small but impactful when timed to player actions</li>
+<li>Text drawing in Raylib requires extra care with alignment (top-left anchor)</li>
+<li><code>rlPushMatrix()</code> / <code>rlScalef()</code> / <code>rlRotatef()</code> give you flexible per element transforms</li>
+<li>Using a center aligned origin lets you animate from the middle of the text</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li><code>DrawTextEx()</code> for rendering custom fonts</li>
+<li>Manual origin correction so animations pivot around center</li>
+<li>A <code>scoreEffect.duration</code> variable drives animation timing</li>
+<li>Lerp used to ease <code>scale</code> and <code>angle</code> back to normal over 0.3s</li>
+</ul>
+<h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
+<p>UI feedback like this makes eating food <em>feel good</em>. The moment you grow, the score text pops and wiggles. It’s subtle, satisfying and immediate. And it’s one of the common steps when building juicy and responsive gameplay.</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 7</a> we’ll start layering on shader based postprocessing. We’ll begin with a glowing bloom effect that makes our game world shine.</p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>

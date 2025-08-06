@@ -1,4 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 31 Jul 2025 10:03:49 +0000</lastBuildDate><item><title>Snake Rewind: Episode 5 – Snake Ends Here</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</link><description><![CDATA[<p>In this episode we complete the core gameplay loop by adding collision detection, game over
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Wed, 06 Aug 2025 08:53:36 +0000</lastBuildDate><item><title>Snake Rewind: Episode 6 - Flashy Feedback</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</link><description><![CDATA[<p>In this episode we bring the score display to life with animated scaling and rotation. We add
+a satisfying visual feedback every time the player eats food and grows the snake.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</guid><pubDate>Wed, 06 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 6 of the Snake Rewind devlog we add a small feature that makes a <strong>huge difference</strong>: animated score text. With just a bit of scaling, rotation and timing our static “LENGTH: N” label becomes a punchy, reactive UI element that enhances the entire game feel.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Added a <code>&quot;LENGTH: N&quot;</code> score label using the arcade font at size 32</li>
+<li>Positioned it top center and adjusted for pixel alignment</li>
+<li>Applied <strong>animated scaling and rotation</strong> when the score increases</li>
+<li>Reset the animation using a timer and <code>lerp</code> to bring it back to normal</li>
+<li>Ensured the visual feedback is tied directly to game events (eating food)</li>
+</ul>
+<p>This kind of micro feedback is what makes Snake Rewind feel responsive and alive.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>UI animations can be small but impactful when timed to player actions</li>
+<li>Text drawing in Raylib requires extra care with alignment (top-left anchor)</li>
+<li><code>rlPushMatrix()</code> / <code>rlScalef()</code> / <code>rlRotatef()</code> give you flexible per element transforms</li>
+<li>Using a center aligned origin lets you animate from the middle of the text</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li><code>DrawTextEx()</code> for rendering custom fonts</li>
+<li>Manual origin correction so animations pivot around center</li>
+<li>A <code>scoreEffect.duration</code> variable drives animation timing</li>
+<li>Lerp used to ease <code>scale</code> and <code>angle</code> back to normal over 0.3s</li>
+</ul>
+<h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
+<p>UI feedback like this makes eating food <em>feel good</em>. The moment you grow, the score text pops and wiggles. It’s subtle, satisfying and immediate. And it’s one of the common steps when building juicy and responsive gameplay.</p>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 7</a> we’ll start layering on shader based postprocessing. We’ll begin with a glowing bloom effect that makes our game world shine.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 5 - Snake Ends Here</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</link><description><![CDATA[<p>In this episode we complete the core gameplay loop by adding collision detection, game over
 logic and a restart system. Thus giving the player something to fear and the game real stakes.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</guid><pubDate>Thu, 31 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep4/">previous episode</a> we introduced clones that retrace your every move. This added tension to each step. Now, in Episode 5, we complete the core gameplay loop by introducing <strong>collision detection</strong>, <strong>game over logic</strong> and a <strong>restart flow</strong>. Thus giving the game consequence and closure.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
@@ -32,7 +62,7 @@ logic and a restart system. Thus giving the player something to fear and the gam
 <h2><a href="#gameplay-impact" aria-hidden="true" class="anchor" id="gameplay-impact"></a>Gameplay Impact</h2>
 <p>This is the point where Snake Rewind becomes a game and not just a system. Every food pickup is now a calculated risk, every movement is a step toward survival or doom. The game punishes you for being predictable and rewards smart pathing.</p>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 6</a> we will work on <strong>score display</strong> and feedback, laying the groundwork for juicy UI and animated responses to player progress.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep6/">Episode 6</a> we will work on <strong>score display</strong> and feedback, laying the groundwork for juicy UI and animated responses to player progress.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 4 - Past Self, Present Danger</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep4</link><description><![CDATA[<p>In this episode we introduce the clone mechanic: snakes that replay your past moves with
 deadly precision. It is a strategic twist that transforms Snake Rewind from a simple remake
 into a tactical survival challenge.</p>
