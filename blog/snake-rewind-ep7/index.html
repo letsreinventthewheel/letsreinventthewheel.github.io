@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><title>Snake Rewind: Episode 7 - Shine On</title><meta charset="utf-8"><meta name="title" content="Snake Rewind: Episode 7 - Shine On"><meta name="description" content="&lt;p&gt;In this episode we give Snake Rewind its first post processing effect: a glowing bloom shader
+that adds depth, atmosphere and a retro arcade vibe to the entire game.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Snake Rewind: Episode 7 - Shine On</h1><p>Published on <time class="dt-published" datetime="2025-08-07">August  7<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/XTu6phHkeMY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In Episode 7 of the Snake Rewind devlog we step into post processing territory and bring our retro grid to life with a glowing <strong>bloom shader</strong>. Based on LearnOpenGL’s bloom effect tutorial, we implement a multi pass blur system that highlights bright pixels and makes every move feel just a bit more cinematic.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented a multi pass bloom/glow shader:
+<ol>
+<li>Brightness threshold</li>
+<li>Horizontal blur</li>
+<li>Vertical blur</li>
+</ol>
+</li>
+<li>Applied additive blending to layer the glow over the original scene</li>
+<li>Used flipped source rectangles to correct Y-axis rendering (Raylib/OpenGL quirk)</li>
+<li>Tuned glow strength with opacity and blur spread</li>
+</ul>
+<p>With this effect in place Snake Rewind now looks like an arcade game in a neon dream and the groundwork is laid for more shader polish to come.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Raylib’s render textures are vertically flipped by default: fix with <code>src.height = -HEIGHT</code></li>
+<li>Threshold pass helps isolate which pixels should glow (based on luminance)</li>
+<li>Separable Gaussian blur (horizontal + vertical) is performant and visually clean</li>
+<li>Applying Gaussian blur multiple times gives a more defined and spread blur</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li>Custom <code>threshold.glsl</code> and <code>blur.glsl</code> shaders in GLSL 330</li>
+<li>Multiple <code>RenderTexture2D</code> buffers: <code>target</code>, <code>tmpA</code>, <code>tmpB</code> and <code>blurred</code></li>
+<li>Ping pong render strategy to apply blur passes cleanly</li>
+</ul>
+<h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
+<p>Visuals matter and even a simple game like Snake gains <strong>impact</strong> and <strong>atmosphere</strong> when it glows in the right places. Our glow shader sets the tone for future effects like scanlines and chromasep.</p>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://learnopengl.com/Advanced-Lighting/Bloom">LearnOpenGL.com: Bloom</a> - our main source for implemetation of bloom/glow shader</li>
+</ul>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 8</a> we’ll dial in the retro feel even further with animated <strong>scanlines</strong> giving our game the look of a vintage CRT arcade screen.</p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>

@@ -1,4 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Wed, 06 Aug 2025 08:53:36 +0000</lastBuildDate><item><title>Snake Rewind: Episode 6 - Flashy Feedback</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</link><description><![CDATA[<p>In this episode we bring the score display to life with animated scaling and rotation. We add
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 07 Aug 2025 13:25:06 +0000</lastBuildDate><item><title>Snake Rewind: Episode 7 - Shine On</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep7</link><description><![CDATA[<p>In this episode we give Snake Rewind its first post processing effect: a glowing bloom shader
+that adds depth, atmosphere and a retro arcade vibe to the entire game.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep7</guid><pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 7 of the Snake Rewind devlog we step into post processing territory and bring our retro grid to life with a glowing <strong>bloom shader</strong>. Based on LearnOpenGL’s bloom effect tutorial, we implement a multi pass blur system that highlights bright pixels and makes every move feel just a bit more cinematic.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented a multi pass bloom/glow shader:
+<ol>
+<li>Brightness threshold</li>
+<li>Horizontal blur</li>
+<li>Vertical blur</li>
+</ol>
+</li>
+<li>Applied additive blending to layer the glow over the original scene</li>
+<li>Used flipped source rectangles to correct Y-axis rendering (Raylib/OpenGL quirk)</li>
+<li>Tuned glow strength with opacity and blur spread</li>
+</ul>
+<p>With this effect in place Snake Rewind now looks like an arcade game in a neon dream and the groundwork is laid for more shader polish to come.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Raylib’s render textures are vertically flipped by default: fix with <code>src.height = -HEIGHT</code></li>
+<li>Threshold pass helps isolate which pixels should glow (based on luminance)</li>
+<li>Separable Gaussian blur (horizontal + vertical) is performant and visually clean</li>
+<li>Applying Gaussian blur multiple times gives a more defined and spread blur</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li>Custom <code>threshold.glsl</code> and <code>blur.glsl</code> shaders in GLSL 330</li>
+<li>Multiple <code>RenderTexture2D</code> buffers: <code>target</code>, <code>tmpA</code>, <code>tmpB</code> and <code>blurred</code></li>
+<li>Ping pong render strategy to apply blur passes cleanly</li>
+</ul>
+<h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
+<p>Visuals matter and even a simple game like Snake gains <strong>impact</strong> and <strong>atmosphere</strong> when it glows in the right places. Our glow shader sets the tone for future effects like scanlines and chromasep.</p>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://learnopengl.com/Advanced-Lighting/Bloom">LearnOpenGL.com: Bloom</a> - our main source for implemetation of bloom/glow shader</li>
+</ul>
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="#">Episode 8</a> we’ll dial in the retro feel even further with animated <strong>scanlines</strong> giving our game the look of a vintage CRT arcade screen.</p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 6 - Flashy Feedback</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</link><description><![CDATA[<p>In this episode we bring the score display to life with animated scaling and rotation. We add
 a satisfying visual feedback every time the player eats food and grows the snake.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</guid><pubDate>Wed, 06 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 6 of the Snake Rewind devlog we add a small feature that makes a <strong>huge difference</strong>: animated score text. With just a bit of scaling, rotation and timing our static “LENGTH: N” label becomes a punchy, reactive UI element that enhances the entire game feel.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
@@ -27,7 +65,7 @@ a satisfying visual feedback every time the player eats food and grows the snake
 <h2><a href="#why-this-matters" aria-hidden="true" class="anchor" id="why-this-matters"></a>Why This Matters</h2>
 <p>UI feedback like this makes eating food <em>feel good</em>. The moment you grow, the score text pops and wiggles. It’s subtle, satisfying and immediate. And it’s one of the common steps when building juicy and responsive gameplay.</p>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 7</a> we’ll start layering on shader based postprocessing. We’ll begin with a glowing bloom effect that makes our game world shine.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep7/">Episode 7</a> we’ll start layering on shader based postprocessing. We’ll begin with a glowing bloom effect that makes our game world shine.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 5 - Snake Ends Here</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</link><description><![CDATA[<p>In this episode we complete the core gameplay loop by adding collision detection, game over
 logic and a restart system. Thus giving the player something to fear and the game real stakes.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep5</guid><pubDate>Thu, 31 Jul 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep4/">previous episode</a> we introduced clones that retrace your every move. This added tension to each step. Now, in Episode 5, we complete the core gameplay loop by introducing <strong>collision detection</strong>, <strong>game over logic</strong> and a <strong>restart flow</strong>. Thus giving the game consequence and closure.</p>
