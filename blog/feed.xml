@@ -1,4 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 07 Aug 2025 13:25:06 +0000</lastBuildDate><item><title>Snake Rewind: Episode 7 - Shine On</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep7</link><description><![CDATA[<p>In this episode we give Snake Rewind its first post processing effect: a glowing bloom shader
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 14 Aug 2025 08:37:10 +0000</lastBuildDate><item><title>Snake Rewind: Episode 8 - Visual Glitchcraft</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep8</link><description><![CDATA[<p>In this episode we dive into retro inspired shader effects: scanlines, flicker, distortion and
+chromatic aberration. This gives our Snake Rewind the look and feel of a glitched out arcade display.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep8</guid><pubDate>Thu, 14 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In our final Episode 8 of the Snake Rewind devlog we dive deep into postprocessing effects to give our game a full retro CRT vibe. From scanlines and flicker to distortion and RGB channel splitting, this episode brings raw visual style to the grid.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented animated <strong>scanlines</strong> with configurable frequency and opacity</li>
+<li>Added subtle <strong>light flicker</strong> for a dynamic CRT shimmer</li>
+<li>Applied sine based <strong>screen distortion</strong> to simulate signal warping</li>
+<li>Built a <strong>chromatic aberration</strong> shader (chromasep) to split RGB channels</li>
+</ul>
+<p>This episode is all about turning the clean pixel grid into something with personality: unstable, glitchy and wonderfully retro.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Scanlines are a sine modulation on brightness based on <code>fragTexCoord.y</code></li>
+<li>Flicker is time based and global, modulating brightness subtly</li>
+<li>Distortion uses UV displacement with sine waves for wobbly lines</li>
+<li>Chromasep offsets the red and blue channels using a randomized <code>distortion</code></li>
+<li>Effects are layered in order: base scene → glow → scanlines → distortion → chromasep</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li>This episode’s effects all reside in <code>scanline.glsl</code> shader</li>
+<li>Used <code>globalTimer</code> utilizing <code>GetFrameTime()</code> to animate phase and flicker over time</li>
+<li>Used a temporary <code>RenderTexture2D</code> to chain passes cleanly</li>
+<li>Composited the final output directly to the screen</li>
+</ul>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://agatedragon.blog/2024/01/26/shadertoy-scanline/">Creating a scanline effect in Shadertoy</a> - initial source for scanline shader, but we built our own thing</li>
+<li><a href="https://mini.gmshaders.com/p/gm-shaders-mini-chromatic-aberration">Mini: Chromatic Aberration</a></li>
+</ul>
+<h2><a href="#tweak-and-expand" aria-hidden="true" class="anchor" id="tweak-and-expand"></a>Tweak and Expand</h2>
+<ul>
+<li>Add background music and sound effects (based on free assets). I will gladly merge your PR if you would like to contribute.</li>
+<li>Clean up the main file and split relevant functionality to specialized header/implementation files</li>
+<li>Extract some parameters from shaders as uniforms and configured them from our <code>main</code></li>
+<li>Add any other effects you think will make the game look even better!</li>
+</ul>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 7 - Shine On</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep7</link><description><![CDATA[<p>In this episode we give Snake Rewind its first post processing effect: a glowing bloom shader
 that adds depth, atmosphere and a retro arcade vibe to the entire game.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep7</guid><pubDate>Thu, 07 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 7 of the Snake Rewind devlog we step into post processing territory and bring our retro grid to life with a glowing <strong>bloom shader</strong>. Based on LearnOpenGL’s bloom effect tutorial, we implement a multi pass blur system that highlights bright pixels and makes every move feel just a bit more cinematic.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
@@ -35,7 +73,7 @@ that adds depth, atmosphere and a retro arcade vibe to the entire game.</p>
 <li><a href="https://learnopengl.com/Advanced-Lighting/Bloom">LearnOpenGL.com: Bloom</a> - our main source for implemetation of bloom/glow shader</li>
 </ul>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 8</a> we’ll dial in the retro feel even further with animated <strong>scanlines</strong> giving our game the look of a vintage CRT arcade screen.</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/snake-rewind-ep8/">Episode 8</a> we’ll dial in the retro feel even further with animated <strong>scanlines</strong> giving our game the look of a vintage CRT arcade screen.</p>
 ]]></content:encoded></item><item><title>Snake Rewind: Episode 6 - Flashy Feedback</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</link><description><![CDATA[<p>In this episode we bring the score display to life with animated scaling and rotation. We add
 a satisfying visual feedback every time the player eats food and grows the snake.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep6</guid><pubDate>Wed, 06 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In Episode 6 of the Snake Rewind devlog we add a small feature that makes a <strong>huge difference</strong>: animated score text. With just a bit of scaling, rotation and timing our static “LENGTH: N” label becomes a punchy, reactive UI element that enhances the entire game feel.</p>

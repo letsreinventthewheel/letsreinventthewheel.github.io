@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><title>Snake Rewind: Episode 8 - Visual Glitchcraft</title><meta charset="utf-8"><meta name="title" content="Snake Rewind: Episode 8 - Visual Glitchcraft"><meta name="description" content="&lt;p&gt;In this episode we dive into retro inspired shader effects: scanlines, flicker, distortion and
+chromatic aberration. This gives our Snake Rewind the look and feel of a glitched out arcade display.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Snake Rewind: Episode 8 - Visual Glitchcraft</h1><p>Published on <time class="dt-published" datetime="2025-08-14">August 14<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/RMJdDgU6vhQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In our final Episode 8 of the Snake Rewind devlog we dive deep into postprocessing effects to give our game a full retro CRT vibe. From scanlines and flicker to distortion and RGB channel splitting, this episode brings raw visual style to the grid.</p>
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented animated <strong>scanlines</strong> with configurable frequency and opacity</li>
+<li>Added subtle <strong>light flicker</strong> for a dynamic CRT shimmer</li>
+<li>Applied sine based <strong>screen distortion</strong> to simulate signal warping</li>
+<li>Built a <strong>chromatic aberration</strong> shader (chromasep) to split RGB channels</li>
+</ul>
+<p>This episode is all about turning the clean pixel grid into something with personality: unstable, glitchy and wonderfully retro.</p>
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<ul>
+<li>Scanlines are a sine modulation on brightness based on <code>fragTexCoord.y</code></li>
+<li>Flicker is time based and global, modulating brightness subtly</li>
+<li>Distortion uses UV displacement with sine waves for wobbly lines</li>
+<li>Chromasep offsets the red and blue channels using a randomized <code>distortion</code></li>
+<li>Effects are layered in order: base scene → glow → scanlines → distortion → chromasep</li>
+</ul>
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<ul>
+<li>This episode’s effects all reside in <code>scanline.glsl</code> shader</li>
+<li>Used <code>globalTimer</code> utilizing <code>GetFrameTime()</code> to animate phase and flicker over time</li>
+<li>Used a temporary <code>RenderTexture2D</code> to chain passes cleanly</li>
+<li>Composited the final output directly to the screen</li>
+</ul>
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://agatedragon.blog/2024/01/26/shadertoy-scanline/">Creating a scanline effect in Shadertoy</a> - initial source for scanline shader, but we built our own thing</li>
+<li><a href="https://mini.gmshaders.com/p/gm-shaders-mini-chromatic-aberration">Mini: Chromatic Aberration</a></li>
+</ul>
+<h2><a href="#tweak-and-expand" aria-hidden="true" class="anchor" id="tweak-and-expand"></a>Tweak and Expand</h2>
+<ul>
+<li>Add background music and sound effects (based on free assets). I will gladly merge your PR if you would like to contribute.</li>
+<li>Clean up the main file and split relevant functionality to specialized header/implementation files</li>
+<li>Extract some parameters from shaders as uniforms and configured them from our <code>main</code></li>
+<li>Add any other effects you think will make the game look even better!</li>
+</ul>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
