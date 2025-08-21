@@ -1,4 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 14 Aug 2025 08:37:10 +0000</lastBuildDate><item><title>Snake Rewind: Episode 8 - Visual Glitchcraft</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep8</link><description><![CDATA[<p>In this episode we dive into retro inspired shader effects: scanlines, flicker, distortion and
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 21 Aug 2025 17:45:36 +0000</lastBuildDate><item><title>Tower Blocks: Episode 1 - Building the 3D Scene</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep1</link><description><![CDATA[<p>In this episode we set up the foundation for our Tower Blocks game in C using Raylib. We establish
+a 3D scene with an orthographic camera, render stackable blocks, implement user input and make the
+camera follow the growing tower. Laying the groundwork for future gameplay mechanics.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/tower-blocks-ep1</guid><pubDate>Thu, 21 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>Welcome to the first episode of our Tower Blocks remake using C and Raylib. In this first part we focus on setting the stage for everything to come: creating a clean and minimal 3D environment with blocks, a movable camera and basic input handling.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Set up a 3D orthographic camera</li>
+<li>Drew a single cube using <code>DrawCube()</code> and <code>DrawCubeWires()</code></li>
+<li>Created a simple <code>Block</code> struct to represent stackable game blocks</li>
+<li>Implemented input handling to spawn new blocks</li>
+<li>Automatically adjusted the camera upward as the stack grows</li>
+</ul>
+<p>This foundational work gives us a visually engaging stack of blocks and a working 3D scene that is interactive right out of the gate.</p>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#a-3d-game-doesnt-have-to-be-complex" aria-hidden="true" class="anchor" id="a-3d-game-doesnt-have-to-be-complex"></a>A 3D Game Doesn’t Have to Be Complex</h3>
+<p>One of the goals of this series is to show how you can build meaningful and visual gameplay without needing a full engine. Raylib gives you a simple 3D API that’s ideal for building things step by step.</p>
+<h3><a href="#stacking-is-visually-rewarding" aria-hidden="true" class="anchor" id="stacking-is-visually-rewarding"></a>Stacking is Visually Rewarding</h3>
+<p>Even with no animations, physics or scoring, the act of stacking blocks and watching them climb the screen feels satisfying. That’s a signal we are on the right track and a good foundation for expanding mechanics.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#block-struct" aria-hidden="true" class="anchor" id="block-struct"></a>Block Struct</h3>
+<p>We use a basic struct to represent a block’s position, size and color:</p>
+<pre class="language-c"><span class="source c"><span class="storage type c">typedef</span> <span class="storage type c">struct</span> <span class="meta block c"><span class="punctuation section block begin c">{</span>
+    Vector3 position<span class="punctuation terminator c">;</span>
+    Vector3 size<span class="punctuation terminator c">;</span>
+    Color color<span class="punctuation terminator c">;</span>
+<span class="punctuation section block end c">}</span></span> <span class="entity name type typedef c">Block</span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>Each new block is based on a <code>default_block</code>, with its Y-position offset by its index in the stack and its color slightly adjusted.</p>
+<h3><a href="#dynamic-block-array" aria-hidden="true" class="anchor" id="dynamic-block-array"></a>Dynamic Block Array</h3>
+<p>We use <code>stb_ds.h</code> to maintain a dynamically growing array of placed blocks:</p>
+<pre class="language-c"><span class="source c">Block <span class="keyword operator c">*</span>placed_blocks <span class="keyword operator assignment c">=</span> nullptr<span class="punctuation terminator c">;</span>
+<span class="meta function-call c"><span class="variable function c">arrpush</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c">placed_blocks<span class="punctuation separator c">,</span> newBlock</span><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<h3><a href="#camera-tracking" aria-hidden="true" class="anchor" id="camera-tracking"></a>Camera Tracking</h3>
+<p>Each time a block is added we reposition the camera to track the top of the tower:</p>
+<pre class="language-c"><span class="source c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric integer decimal c">50</span> <span class="keyword operator arithmetic c">+</span> <span class="constant numeric integer decimal c">2</span> <span class="keyword operator c">*</span> placed_blocks_count<span class="punctuation terminator c">;</span>
+camera<span class="punctuation accessor c">-&gt;</span>target<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric integer decimal c">2</span> <span class="keyword operator c">*</span> placed_blocks_count<span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>This gives the impression of infinite vertical growth.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In the next episode we will give the player something to do. We’ll introduce the <strong>moving block mechanic</strong>.</p>
+<ul>
+<li>The block will slide in from one side</li>
+<li>We will alternate movement direction along X and Z axes</li>
+<li>The player will time their placement with a press</li>
+<li>We will start building toward actual gameplay</li>
+</ul>
+<p>From here the project becomes a lot more dynamic and game-like.</p>
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
+]]></content:encoded></item><item><title>Snake Rewind: Episode 8 - Visual Glitchcraft</title><link>https://letsreinventthewheel.github.io/blog/snake-rewind-ep8</link><description><![CDATA[<p>In this episode we dive into retro inspired shader effects: scanlines, flicker, distortion and
 chromatic aberration. This gives our Snake Rewind the look and feel of a glitched out arcade display.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/snake-rewind-ep8</guid><pubDate>Thu, 14 Aug 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In our final Episode 8 of the Snake Rewind devlog we dive deep into postprocessing effects to give our game a full retro CRT vibe. From scanlines and flicker to distortion and RGB channel splitting, this episode brings raw visual style to the grid.</p>
 <h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
