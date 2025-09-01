@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/tower-blocks-ep2
 https://letsreinventthewheel.github.io/blog/tower-blocks-ep1
 https://letsreinventthewheel.github.io/blog/snake-rewind-ep8
 https://letsreinventthewheel.github.io/blog/snake-rewind-ep7
