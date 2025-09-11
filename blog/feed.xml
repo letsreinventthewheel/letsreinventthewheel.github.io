@@ -1,4 +1,70 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Mon, 01 Sep 2025 07:28:10 +0000</lastBuildDate><item><title>Tower Blocks: Episode 2 - Core Game Mechanics</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep2</link><description><![CDATA[<p>In this episode we bring the Tower Blocks game to life by adding core game mechanics: block movement,
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Thu, 11 Sep 2025 09:25:11 +0000</lastBuildDate><item><title>Tower Blocks: Episode 3 - UI Animations</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep3</link><description><![CDATA[<p>In previous episode we built the core gameplay: blocks move, players place them and the tower grows.
+Now in this episode we focus on polishing the experience by adding smooth text effects: animated score scaling,
+overlay fade-ins and sliding titles. It’s all about giving the UI some life and making the game feel responsive and dynamic.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/tower-blocks-ep3</guid><pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep2/">Episode 2</a> we implemented the core gameplay loop:
+blocks move, you place them, the stack grows and the game ends if you miss.
+It works! But it still feels raw. In this episode we begin to polish the experience with animated UI elements.
+We add text effects to our overlays and score, introducing smooth transitions that make the game feel responsive and alive.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Added scaling animation to the score display (<code>ScoreAnimation</code>)</li>
+<li>Implemented fade-in and fade-out transitions for overlays (<code>OverlayAnimation</code>)</li>
+<li>Introduced vertical movement for overlay text during fade</li>
+<li>Refactored overlay drawing to a generic <code>DrawOverlay()</code> function</li>
+<li>Integrated these animations into the game state transitions (start, game over, restart)</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#why-animate-the-ui" aria-hidden="true" class="anchor" id="why-animate-the-ui"></a>Why Animate the UI?</h3>
+<p>Games aren’t just about logic. They are about <strong>feel</strong>. Animating UI text helps:</p>
+<ul>
+<li>Direct the player’s attention</li>
+<li>Provide satisfying feedback</li>
+<li>Smooth out transitions between game states</li>
+</ul>
+<h3><a href="#keeping-it-modular" aria-hidden="true" class="anchor" id="keeping-it-modular"></a>Keeping It Modular</h3>
+<p>Instead of hardcoding effects into <code>DrawText()</code>, we created dedicated animation structs:</p>
+<ul>
+<li><code>ScoreAnimation</code> tracks scaling of the score when a block is placed</li>
+<li><code>OverlayAnimation</code> handles alpha and vertical movement of overlays</li>
+</ul>
+<p>This keeps things clean and reusable for future polish (e.g. easing, spring effects).</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#score-pop-animation" aria-hidden="true" class="anchor" id="score-pop-animation"></a>Score Pop Animation</h3>
+<p>When a block is placed, we animate the score like this:</p>
+<pre class="language-c"><span class="source c">game<span class="punctuation accessor c">-&gt;</span>animations<span class="punctuation accessor c">.</span><span class="variable other member c">score</span><span class="punctuation accessor c">.</span><span class="variable other member c">duration</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric float decimal c">0<span class="punctuation separator decimal c">.</span>2<span class="storage type numeric c">f</span></span><span class="punctuation terminator c">;</span>
+game<span class="punctuation accessor c">-&gt;</span>animations<span class="punctuation accessor c">.</span><span class="variable other member c">score</span><span class="punctuation accessor c">.</span><span class="variable other member c">scale</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric float decimal c">1<span class="punctuation separator decimal c">.</span>5<span class="storage type numeric c">f</span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>Each frame:</p>
+<pre class="language-c"><span class="source c"><span class="storage type c">float</span> t <span class="keyword operator assignment c">=</span> <span class="constant numeric integer decimal c">1</span> <span class="keyword operator arithmetic c">-</span> duration <span class="keyword operator arithmetic c">/</span> maxDuration<span class="punctuation terminator c">;</span>
+score<span class="punctuation accessor c">.</span><span class="variable other member c">scale</span> <span class="keyword operator assignment c">=</span> <span class="meta function-call c"><span class="variable function c">Lerp</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c"><span class="constant numeric float decimal c">1<span class="punctuation separator decimal c">.</span>5<span class="storage type numeric c">f</span></span><span class="punctuation separator c">,</span> <span class="constant numeric float decimal c">1<span class="punctuation separator decimal c">.</span>0<span class="storage type numeric c">f</span></span><span class="punctuation separator c">,</span> t</span></span><span class="meta function-call c"><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<h3><a href="#overlay-fade-and-slide" aria-hidden="true" class="anchor" id="overlay-fade-and-slide"></a>Overlay Fade and Slide</h3>
+<p>We animate both <code>alpha</code> and <code>offsetY</code> of overlays:</p>
+<pre class="language-c"><span class="source c">overlay<span class="punctuation accessor c">.</span><span class="variable other member c">alpha</span> <span class="keyword operator assignment augmented c">+=</span> dt <span class="keyword operator c">*</span> speed<span class="punctuation terminator c">;</span>
+overlay<span class="punctuation accessor c">.</span><span class="variable other member c">offsetY</span> <span class="keyword operator assignment c">=</span> <span class="meta function-call c"><span class="variable function c">Lerp</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c"><span class="keyword operator arithmetic c">-</span><span class="constant numeric integer decimal c">50</span><span class="punctuation separator c">,</span> <span class="constant numeric integer decimal c">0</span><span class="punctuation separator c">,</span> overlay<span class="punctuation accessor c">.</span><span class="variable other member c">alpha</span></span></span><span class="meta function-call c"><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>This makes overlays slide in from above while fading in, mimicking web-like transitions (<code>transform: translateY(-50px) scale(1.5)</code> in CSS).</p>
+<h3><a href="#unified-overlay-drawing" aria-hidden="true" class="anchor" id="unified-overlay-drawing"></a>Unified Overlay Drawing</h3>
+<p>Both the start screen and game over screen use the same generic draw function:</p>
+<pre class="language-c"><span class="source c"><span class="storage type c">void</span> <span class="meta function c"><span class="entity name function c">DrawOverlay</span></span><span class="meta function parameters c"><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function parameters c"><span class="meta group c"><span class="storage modifier c">const</span> Game <span class="keyword operator c">*</span><span class="variable parameter c">game</span><span class="punctuation separator c">,</span> <span class="storage modifier c">const</span> <span class="storage type c">char</span> <span class="keyword operator c">*</span><span class="variable parameter c">title</span><span class="punctuation separator c">,</span> <span class="storage modifier c">const</span> <span class="storage type c">char</span> <span class="keyword operator c">*</span><span class="variable parameter c">subtitle</span><span class="punctuation separator c">,</span> <span class="keyword operator variadic c">...</span><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>Cleaner code, fewer branches and easier expansion.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep4/">Episode 4</a> we will bring physics into play:</p>
+<ul>
+<li>Add <strong>falling chopped blocks</strong> when placement isn’t perfect</li>
+<li>Simulate simple gravity and spin</li>
+<li>Introduce cleanup and lifecycle logic</li>
+</ul>
+<p>With logic, feedback and animation in place, we are ready to make the game feel truly alive.</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
+]]></content:encoded></item><item><title>Tower Blocks: Episode 2 - Core Game Mechanics</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep2</link><description><![CDATA[<p>In this episode we bring the Tower Blocks game to life by adding core game mechanics: block movement,
 stacking logic, placement handling and the essential game loop with win/loss conditions.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/tower-blocks-ep2</guid><pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep1/">Episode 1</a> we built a basic 3D scene with stackable blocks. This time we take a huge leap forward
 and implement the <strong>core game mechanics</strong> by adding animated block movement, placement logic and a simple win/loss system.</p>
@@ -57,7 +123,7 @@ and implement the <strong>core game mechanics</strong> by adding animated block 
 <li>Let the player restart cleanly</li>
 </ul>
 <h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
-<p>In <a href="#">Episode 3</a> we will focus on <strong>polish</strong>:</p>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep2/">Episode 3</a> we will focus on <strong>polish</strong>:</p>
 <ul>
 <li>Animate game overlays (start game, game over, game score)</li>
 <li>Move camera smoothly instead of snapping to the next position</li>
