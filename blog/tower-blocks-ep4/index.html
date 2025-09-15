@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head><title>Tower Blocks: Episode 4 - Falling Blocks</title><meta charset="utf-8"><meta name="title" content="Tower Blocks: Episode 4 - Falling Blocks"><meta name="description" content="&lt;p&gt;In this episode we add the missing piece that makes Tower Blocks feel alive: falling chopped blocks and
+a smooth-following camera. Imperfect placements now result in tumbling pieces that fall and spin, while
+the camera glides upward as the tower grows. The game is no longer just functional. It reacts.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Tower Blocks: Episode 4 - Falling Blocks</h1><p>Published on <time class="dt-published" datetime="2025-09-15">September 15<sup>th</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/nDvHlSvJMYk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep3/">Episode 3</a> we brought the UI to life with animated
+overlays and a popping score. It was our first step into polish and player feedback. In this episode we carry
+that momentum forward by giving physicality to failure: when a block is placed imperfectly, the overhanging part
+now falls, spins and disappears from view. We also improve the feel of the game by replacing the rigid camera
+jump with a smooth lerped transition that follows the growing tower naturally. The game now reacts and that makes
+all the difference.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Introduced the <code>FallingBlock</code> struct</li>
+<li>Spawned falling blocks when placement isn’t perfect</li>
+<li>Added spin and velocity to falling blocks</li>
+<li>Replaced camera snapping with smooth lerp-based motion</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#giving-weight-to-imperfection" aria-hidden="true" class="anchor" id="giving-weight-to-imperfection"></a>Giving Weight to Imperfection</h3>
+<p>Previously, when you missed part of a block, it just disappeared.
+Now that it <strong>falls and spins</strong>, the player gets a satisfying visual response and the tower feels more alive.</p>
+<p>This small touch reinforces:</p>
+<ul>
+<li>The consequence of imperfect timing</li>
+<li>A sense of physics in an otherwise clean-cut game</li>
+</ul>
+<h3><a href="#smooth-camera--instant-polish" aria-hidden="true" class="anchor" id="smooth-camera--instant-polish"></a>Smooth Camera = Instant Polish</h3>
+<p>Hard-snapping the camera to new heights looked jumpy. With this change:</p>
+<pre class="language-c"><span class="source c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment c">=</span> <span class="meta function-call c"><span class="variable function c">Lerp</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span><span class="punctuation separator c">,</span> targetY<span class="punctuation separator c">,</span> speed</span></span><span class="meta function-call c"><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>…it feels like the camera <strong>follows</strong> the stack gently. It is a one line change with a massive payoff in presentation.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#fallingblock-struct" aria-hidden="true" class="anchor" id="fallingblock-struct"></a>FallingBlock Struct</h3>
+<p>We added a dedicated struct to handle active falling pieces:</p>
+<pre class="language-c"><span class="source c"><span class="storage type c">typedef</span> <span class="storage type c">struct</span> <span class="meta block c"><span class="punctuation section block begin c">{</span>
+    Vector3 position<span class="punctuation terminator c">;</span>
+    Vector3 size<span class="punctuation terminator c">;</span>
+    Vector3 rotation<span class="punctuation terminator c">;</span>
+    Vector3 rotationSpeed<span class="punctuation terminator c">;</span>
+    Vector3 velocity<span class="punctuation terminator c">;</span>
+    Color color<span class="punctuation terminator c">;</span>
+    <span class="storage type c">bool</span> active<span class="punctuation terminator c">;</span>
+<span class="punctuation section block end c">}</span></span> <span class="entity name type typedef c">FallingBlock</span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<h3><a href="#on-block-placement" aria-hidden="true" class="anchor" id="on-block-placement"></a>On Block Placement</h3>
+<p>If the block isn’t perfectly aligned, we calculate the <strong>chopped portion</strong>, spawn a <code>FallingBlock</code> and push it to a dynamic array.</p>
+<h3><a href="#physics-simulation" aria-hidden="true" class="anchor" id="physics-simulation"></a>Physics Simulation</h3>
+<p>Each frame:</p>
+<ul>
+<li>The falling block rotates using <code>rotationSpeed</code></li>
+<li>Moves down with <code>velocity</code></li>
+<li>Gets culled when it drops too far</li>
+</ul>
+<pre class="language-c"><span class="source c">block<span class="punctuation accessor c">-&gt;</span>rotation<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment augmented c">+=</span> block<span class="punctuation accessor c">-&gt;</span>rotationSpeed<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator c">*</span> dt<span class="punctuation terminator c">;</span>
+block<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment augmented c">+=</span> block<span class="punctuation accessor c">-&gt;</span>velocity<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator c">*</span> dt<span class="punctuation terminator c">;</span>
+</span></code></pre>
+<h3><a href="#smooth-camera-movement" aria-hidden="true" class="anchor" id="smooth-camera-movement"></a>Smooth Camera Movement</h3>
+<p>Instead of this:</p>
+<pre class="language-c"><span class="source c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric integer decimal c">50</span> <span class="keyword operator arithmetic c">+</span> <span class="constant numeric integer decimal c">2</span> <span class="keyword operator c">*</span> blockCount<span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>We now use:</p>
+<pre class="language-c"><span class="source c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span> <span class="keyword operator assignment c">=</span> <span class="meta function-call c"><span class="variable function c">Lerp</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c">camera<span class="punctuation accessor c">-&gt;</span>position<span class="punctuation accessor c">.</span><span class="variable other member c">y</span><span class="punctuation separator c">,</span> <span class="constant numeric integer decimal c">50</span> <span class="keyword operator arithmetic c">+</span> <span class="constant numeric integer decimal c">2</span> <span class="keyword operator c">*</span> blockCount<span class="punctuation separator c">,</span> <span class="constant numeric float decimal c">0<span class="punctuation separator decimal c">.</span>1<span class="storage type numeric c">f</span></span></span></span><span class="meta function-call c"><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>This gives the camera a smooth natural feel as the stack grows.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep5/">Episode 5</a> we’ll keep building on the polish:</p>
+<ul>
+<li>Introduce shaders to stylize the world</li>
+<li>Add realtime lighting and shadows</li>
+</ul>
+<p>We’re now well past the prototype phase. The game is becoming fun to watch and play.</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
