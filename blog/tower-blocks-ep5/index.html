@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><title>Tower Blocks: Episode 5 - Custom Lighting Shaders</title><meta charset="utf-8"><meta name="title" content="Tower Blocks: Episode 5 - Custom Lighting Shaders"><meta name="description" content="&lt;p&gt;In this episode we upgrade the visuals of Tower Blocks by writing custom lighting shaders
+in GLSL. We move from flat colored cubes to fully lit 3D blocks using ambient, diffuse and
+specular lighting. This step brings real depth to the scene.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Tower Blocks: Episode 5 - Custom Lighting Shaders</h1><p>Published on <time class="dt-published" datetime="2025-09-21">September 21<sup>st</sup>, 2025</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/46NlIpBSbNk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep4/">Episode 4</a> we made the game reactive by adding falling blocks and smooth camera motion.
+This time we tackle one of the most noticeable visual upgrades: <strong>custom lighting shaders</strong>.</p>
+<p>We write our own GLSL shaders to simulate 3D lighting with ambient, diffuse and specular
+components. This gives every block depth, contrast and a real sense of volume.
+No more flat cubes.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Wrote a custom GLSL <strong>vertex shader</strong> to output transformed positions and normals</li>
+<li>Implemented a <strong>fragment shader</strong> with Blinn-Phong lighting:
+<ul>
+<li>Ambient</li>
+<li>Diffuse (Lambert)</li>
+<li>Specular (Phong)</li>
+</ul>
+</li>
+<li>Passed per-object <code>blockColor</code> to the shader</li>
+<li>Passed the <code>cameraPosition</code> to compute view direction and reflection</li>
+<li>Integrated custom shader into <code>DrawBlock()</code> and <code>DrawFallingBlocks()</code></li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#why-write-our-own-shaders" aria-hidden="true" class="anchor" id="why-write-our-own-shaders"></a>Why Write Our Own Shaders?</h3>
+<p>Raylib’s default lighting system is limited. By writing our own shaders we get:</p>
+<ul>
+<li>Full control over light position, color and intensity</li>
+<li>Ability to animate lighting later (e.g., pulsing, colored lights)</li>
+<li>More realistic visuals (light fades with angle)</li>
+<li>Learnable, portable GLSL patterns</li>
+</ul>
+<h3><a href="#how-we-structured-it" aria-hidden="true" class="anchor" id="how-we-structured-it"></a>How We Structured It</h3>
+<p>We use the standard Raylib uniforms (<code>mvp</code>, <code>matModel</code>) so Raylib automatically sends in our matrices. We compute:</p>
+<ul>
+<li><code>FragPosition = vec3(matModel * vec4(vertexPosition, 1.0))</code></li>
+<li><code>FragNormal = normalize(mat3(transpose(inverse(matModel))) * normal)</code></li>
+</ul>
+<p>This gives us everything we need to do lighting math in world space.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#vertex-shader" aria-hidden="true" class="anchor" id="vertex-shader"></a>Vertex Shader</h3>
+<pre class="language-glsl"><span class="source glsl"><span class="storage modifier glsl">uniform</span> <span class="storage type glsl">mat4</span> mvp<span class="punctuation terminator glsl">;</span>
+<span class="storage modifier glsl">uniform</span> <span class="storage type glsl">mat4</span> matModel<span class="punctuation terminator glsl">;</span>
+
+<span class="storage modifier glsl">in</span> <span class="storage type glsl">vec3</span> vertexPosition<span class="punctuation terminator glsl">;</span>
+<span class="storage modifier glsl">in</span> <span class="storage type glsl">vec3</span> vertexNormal<span class="punctuation terminator glsl">;</span>
+
+<span class="storage modifier glsl">out</span> <span class="storage type glsl">vec3</span> FragPosition<span class="punctuation terminator glsl">;</span>
+<span class="storage modifier glsl">out</span> <span class="storage type glsl">vec3</span> FragNormal<span class="punctuation terminator glsl">;</span>
+
+<span class="storage type glsl">void</span> <span class="meta function glsl"><span class="entity name function glsl">main</span></span><span class="meta function parameters glsl"><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function parameters glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="meta function glsl"> </span><span class="meta function glsl"><span class="meta block glsl"><span class="punctuation section block begin glsl">{</span></span></span><span class="meta function glsl"><span class="meta block glsl">
+    FragPosition <span class="keyword operator assignment glsl">=</span> <span class="storage type glsl">vec3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span>matModel <span class="keyword operator glsl">*</span> <span class="storage type glsl">vec4</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span>vertexPosition<span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">1.0</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+    FragNormal <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">normalize</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="storage type glsl">mat3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span><span class="meta function-call glsl"><span class="support function glsl">transpose</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="meta function-call glsl"><span class="variable function glsl">inverse</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">matModel</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation section group end glsl">)</span></span> <span class="keyword operator glsl">*</span> vertexNormal</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+    <span class="variable language glsl">gl_Position</span> <span class="keyword operator assignment glsl">=</span> mvp <span class="keyword operator glsl">*</span> <span class="storage type glsl">vec4</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span>vertexPosition<span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">1.0</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+</span></span><span class="meta function glsl"><span class="meta block glsl"><span class="punctuation section block end glsl">}</span></span></span>
+</span></code></pre>
+<h3><a href="#fragment-shader" aria-hidden="true" class="anchor" id="fragment-shader"></a>Fragment Shader</h3>
+<pre class="language-glsl"><span class="source glsl"><span class="storage modifier glsl">uniform</span> <span class="storage type glsl">vec3</span> blockColor<span class="punctuation terminator glsl">;</span>
+<span class="storage modifier glsl">uniform</span> <span class="storage type glsl">vec3</span> cameraPosition<span class="punctuation terminator glsl">;</span>
+
+<span class="storage modifier glsl">in</span> <span class="storage type glsl">vec3</span> FragPosition<span class="punctuation terminator glsl">;</span>
+<span class="storage modifier glsl">in</span> <span class="storage type glsl">vec3</span> FragNormal<span class="punctuation terminator glsl">;</span>
+
+<span class="storage modifier glsl">out</span> <span class="storage type glsl">vec4</span> FragColor<span class="punctuation terminator glsl">;</span>
+
+<span class="storage type glsl">void</span> <span class="meta function glsl"><span class="entity name function glsl">main</span></span><span class="meta function parameters glsl"><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function parameters glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="meta function glsl"> </span><span class="meta function glsl"><span class="meta block glsl"><span class="punctuation section block begin glsl">{</span></span></span><span class="meta function glsl"><span class="meta block glsl">
+    <span class="comment line double-slash glsl"><span class="punctuation definition comment glsl">//</span> Hardcoded light
+</span>    <span class="storage type glsl">vec3</span> lightPosition <span class="keyword operator assignment glsl">=</span> <span class="storage type glsl">vec3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span><span class="keyword operator arithmetic glsl">-</span><span class="constant numeric glsl">50</span><span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">500</span><span class="punctuation separator glsl">,</span> <span class="keyword operator arithmetic glsl">-</span><span class="constant numeric glsl">50</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+
+    <span class="storage type glsl">vec3</span> lightDir <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">normalize</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">FragPosition <span class="keyword operator arithmetic glsl">-</span> lightPosition</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+    <span class="storage type glsl">float</span> diff <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">max</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="meta function-call glsl"><span class="support function glsl">dot</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">FragNormal<span class="punctuation separator glsl">,</span> <span class="keyword operator arithmetic glsl">-</span>lightDir</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">0.0</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+
+    <span class="storage type glsl">vec3</span> viewDir <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">normalize</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">cameraPosition <span class="keyword operator arithmetic glsl">-</span> FragPosition</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+    <span class="storage type glsl">vec3</span> reflectDir <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">reflect</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">lightDir<span class="punctuation separator glsl">,</span> FragNormal</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+    <span class="storage type glsl">float</span> spec <span class="keyword operator assignment glsl">=</span> <span class="meta function-call glsl"><span class="support function glsl">pow</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="meta function-call glsl"><span class="support function glsl">max</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="meta function-call glsl"><span class="support function glsl">dot</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span></span></span><span class="meta function-call glsl"><span class="meta group glsl">viewDir<span class="punctuation separator glsl">,</span> reflectDir</span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">0.0</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">32.0</span></span></span><span class="meta function-call glsl"><span class="meta group glsl"><span class="punctuation section group end glsl">)</span></span></span><span class="punctuation terminator glsl">;</span>
+
+    <span class="storage type glsl">vec3</span> ambient <span class="keyword operator assignment glsl">=</span> <span class="storage type glsl">vec3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span><span class="constant numeric glsl">0.4</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+    <span class="storage type glsl">vec3</span> diffuse <span class="keyword operator assignment glsl">=</span> diff <span class="keyword operator glsl">*</span> <span class="storage type glsl">vec3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span><span class="constant numeric glsl">0.5</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+    <span class="storage type glsl">vec3</span> specular <span class="keyword operator assignment glsl">=</span> spec <span class="keyword operator glsl">*</span> <span class="storage type glsl">vec3</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span><span class="constant numeric glsl">0.5</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+
+    <span class="storage type glsl">vec3</span> lighting <span class="keyword operator assignment glsl">=</span> <span class="meta group glsl"><span class="punctuation section group begin glsl">(</span>ambient <span class="keyword operator arithmetic glsl">+</span> diffuse <span class="keyword operator arithmetic glsl">+</span> specular<span class="punctuation section group end glsl">)</span></span> <span class="keyword operator glsl">*</span> blockColor<span class="punctuation terminator glsl">;</span>
+    FragColor <span class="keyword operator assignment glsl">=</span> <span class="storage type glsl">vec4</span><span class="meta group glsl"><span class="punctuation section group begin glsl">(</span>lighting<span class="punctuation separator glsl">,</span> <span class="constant numeric glsl">1.0</span><span class="punctuation section group end glsl">)</span></span><span class="punctuation terminator glsl">;</span>
+</span></span><span class="meta function glsl"><span class="meta block glsl"><span class="punctuation section block end glsl">}</span></span></span>
+</span></code></pre>
+<h3><a href="#shader-integration" aria-hidden="true" class="anchor" id="shader-integration"></a>Shader Integration</h3>
+<ul>
+<li>Replaced <code>DrawCube()</code> calls with:
+<pre class="language-c"><span class="source c"><span class="meta function-call c"><span class="variable function c">BeginShaderMode</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c">lightingShader</span><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+    <span class="meta function-call c"><span class="variable function c">DrawCube</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c"><span class="keyword operator variadic c">...</span></span><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+<span class="meta function-call c"><span class="variable function c">EndShaderMode</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"></span><span class="meta function-call c"><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+</li>
+<li>Passed:
+<ul>
+<li><code>blockColor</code> using <code>SetShaderValue()</code></li>
+<li><code>cameraPosition</code> each frame</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2><a href="#external-resources" aria-hidden="true" class="anchor" id="external-resources"></a>External Resources</h2>
+<ul>
+<li><a href="https://learnopengl.com/Lighting/Basic-Lighting">Basic Lighting</a> - great article describing how lighting works and how it can be implemented</li>
+<li><a href="https://learnopengl.com/Lighting/Materials">Materials</a> - the next step for the previous article</li>
+<li><a href="https://github.com/raysan5/raylib/wiki/raylib-generic-uber-shader-and-custom-shaders">Raylib Custom Shaders</a> - list of available uniforms and default attributes provided by Raylib</li>
+</ul>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep6/">Episode 6</a> we’ll revisit what happens after a game ends.
+Instead of instantly restarting, we’ll introduce a brand new <code>RESETTING_STATE</code>, where the
+entire tower gracefully collapses, shrinks or fades away. In other words the stage will
+have a satisfying restart. This gives the game a natural rhythm and a much more polished
+reset cycle. Think of it as a reward for losing: a bit of visual closure before you start
+stacking again.</p>
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
