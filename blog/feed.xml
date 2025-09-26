@@ -1,4 +1,66 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Sun, 21 Sep 2025 16:37:59 +0000</lastBuildDate><item><title>Tower Blocks: Episode 5 - Custom Lighting Shaders</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep5</link><description><![CDATA[<p>In this episode we upgrade the visuals of Tower Blocks by writing custom lighting shaders
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2025 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 26 Sep 2025 09:32:29 +0000</lastBuildDate><item><title>Tower Blocks: Episode 6 - Tower Collapse</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep6</link><description><![CDATA[<p>In this episode we introduce a new game state that animates the tower collapse after game over.
+Instead of instantly resetting, blocks now shrink and rotate away with staggered timing, creating
+a smooth and satisfying transition before restarting the game. This adds polish, pacing and a more
+finished feel to the overall game loop.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/tower-blocks-ep6</guid><pubDate>Fri, 26 Sep 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep5/">Episode 5</a> we introduced custom lighting shaders to give our blocks depth and style.
+This time we are focusing on something more subtle but equally impactful: <strong>what happens after the game ends</strong>.</p>
+<p>Instead of immediately resetting the game, we add a new state where the tower gracefully <strong>collapses piece by piece</strong>,
+giving the player a moment to breathe and reflect… and giving the game a satisfying rhythm between rounds.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Introduced a new <code>RESETTING_STATE</code> between Game Over and restart</li>
+<li>Added a <code>Removal</code> struct to each block to track its animation state</li>
+<li>Applied staggered animation delays so blocks collapse from top to bottom</li>
+<li>Shrunk and rotated each block using <code>MatrixScale</code> and <code>MatrixRotate</code></li>
+<li>Cleaned up removed blocks once they’re done animating</li>
+<li>Deferred game reset until collapse animation is complete</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#why-animate-game-reset" aria-hidden="true" class="anchor" id="why-animate-game-reset"></a>Why Animate Game Reset?</h3>
+<p>Previously, the game instantly reset when the player clicked after losing. It felt jarring. Now:</p>
+<ul>
+<li>The blocks <em>visually leave the scene</em></li>
+<li>The player gets a soft moment of feedback</li>
+<li>The pacing feels more intentional and polished</li>
+</ul>
+<p>These transitions, even if simple, <strong>greatly improve how finished the game feels</strong>.</p>
+<h3><a href="#staggered-collapse-for-extra-satisfaction" aria-hidden="true" class="anchor" id="staggered-collapse-for-extra-satisfaction"></a>Staggered Collapse for Extra Satisfaction</h3>
+<p>Each block gets a delay based on its position in the stack:</p>
+<pre class="language-c"><span class="source c">block<span class="punctuation accessor c">-&gt;</span>removal<span class="punctuation accessor c">.</span><span class="variable other member c">delay</span> <span class="keyword operator assignment c">=</span> <span class="meta group c"><span class="punctuation section group begin c">(</span>len <span class="keyword operator arithmetic c">-</span> i<span class="punctuation section group end c">)</span></span> <span class="keyword operator c">*</span> <span class="constant numeric float decimal c">0<span class="punctuation separator decimal c">.</span>05</span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>This creates a downward ripple: the higher blocks vanish first, the base vanishes last.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#new-removal-struct" aria-hidden="true" class="anchor" id="new-removal-struct"></a>New <code>Removal</code> Struct</h3>
+<pre class="language-c"><span class="source c"><span class="storage type c">typedef</span> <span class="storage type c">struct</span> <span class="meta block c"><span class="punctuation section block begin c">{</span>
+    <span class="storage type c">float</span> timer<span class="punctuation terminator c">;</span>
+    <span class="storage type c">float</span> delay<span class="punctuation terminator c">;</span>
+    <span class="storage type c">float</span> scale<span class="punctuation terminator c">;</span>
+    <span class="storage type c">float</span> rotation<span class="punctuation terminator c">;</span>
+<span class="punctuation section block end c">}</span></span> <span class="entity name type typedef c">Removal</span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>Each block now tracks its own shrinking/rotation animation.</p>
+<h3><a href="#animate-on-game-over" aria-hidden="true" class="anchor" id="animate-on-game-over"></a>Animate on Game Over</h3>
+<p>When the player clicks after losing, we move into <code>RESETTING_STATE</code> and call:</p>
+<pre class="language-c"><span class="source c"><span class="meta function-call c"><span class="variable function c">StartTowerCollapse</span><span class="meta group c"><span class="punctuation section group begin c">(</span></span></span><span class="meta function-call c"><span class="meta group c">game</span><span class="meta group c"><span class="punctuation section group end c">)</span></span></span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>This sets up each block’s removal delay.</p>
+<h3><a href="#animate--delete-over-time" aria-hidden="true" class="anchor" id="animate--delete-over-time"></a>Animate + Delete Over Time</h3>
+<p>Each frame, we update:</p>
+<pre class="language-c"><span class="source c">block<span class="punctuation accessor c">-&gt;</span>removal<span class="punctuation accessor c">.</span><span class="variable other member c">scale</span> <span class="keyword operator assignment c">=</span> <span class="constant numeric float decimal c">1<span class="punctuation separator decimal c">.</span>0</span> <span class="keyword operator arithmetic c">-</span> t<span class="punctuation terminator c">;</span>
+block<span class="punctuation accessor c">-&gt;</span>removal<span class="punctuation accessor c">.</span><span class="variable other member c">rotation</span> <span class="keyword operator assignment c">=</span> t <span class="keyword operator c">*</span> <span class="constant numeric integer decimal c">7</span><span class="punctuation terminator c">;</span>
+</span></code></pre>
+<p>If <code>t &gt; 0.9</code>, we remove the block from the array.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p><a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep5/">Episode 7</a> will be our last one where we will introduce <strong>sounds</strong> to our game.</p>
+<p>We are already in a phase where small additions make a big difference. The game’s core is stable and we are making it shine.</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
+]]></content:encoded></item><item><title>Tower Blocks: Episode 5 - Custom Lighting Shaders</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep5</link><description><![CDATA[<p>In this episode we upgrade the visuals of Tower Blocks by writing custom lighting shaders
 in GLSL. We move from flat colored cubes to fully lit 3D blocks using ambient, diffuse and
 specular lighting. This step brings real depth to the scene.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/tower-blocks-ep5</guid><pubDate>Sun, 21 Sep 2025 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <a href="https://letsreinventthewheel.github.io/blog/tower-blocks-ep4/">Episode 4</a> we made the game reactive by adding falling blocks and smooth camera motion.
@@ -114,6 +176,7 @@ entire tower gracefully collapses, shrinks or fades away. In other words the sta
 have a satisfying restart. This gives the game a natural rhythm and a much more polished
 reset cycle. Think of it as a reward for losing: a bit of visual closure before you start
 stacking again.</p>
+<hr />
 <h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
 <p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/tower-blocks">tower-blocks</a></p>
 ]]></content:encoded></item><item><title>Tower Blocks: Episode 4 - Falling Blocks</title><link>https://letsreinventthewheel.github.io/blog/tower-blocks-ep4</link><description><![CDATA[<p>In this episode we add the missing piece that makes Tower Blocks feel alive: falling chopped blocks and

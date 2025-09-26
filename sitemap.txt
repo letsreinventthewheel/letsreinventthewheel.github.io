@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/tower-blocks-ep6
 https://letsreinventthewheel.github.io/blog/tower-blocks-ep5
 https://letsreinventthewheel.github.io/blog/tower-blocks-ep4
 https://letsreinventthewheel.github.io/blog/tower-blocks-ep3
