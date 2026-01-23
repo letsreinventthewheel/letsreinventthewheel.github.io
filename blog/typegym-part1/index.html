@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 1: Main Loop</title><meta charset="utf-8"><meta name="title" content="Coding TypeGym: A Rust Terminal Typing Trainer | Part 1: Main Loop"><meta name="description" content="&lt;p&gt;In Part 1 of our TypeGym series we set up the terminal app skeleton using Rust + Ratatui:
+a clean main loop, a UI event loop, and the first round of key handling. Nothing fancy yet.
+Just the foundation we will build the actual typing trainer on top of.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Coding TypeGym: A Rust Terminal Typing Trainer | Part 1: Main Loop</h1><p>Published on <time class="dt-published" datetime="2026-01-23">January 23<sup>rd</sup>, 2026</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/rzs9Gg1ERKc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>Welcome to <strong>Part 1</strong> of <strong>TypeGym</strong>: a terminal based typing trainer we’re building from scratch in <strong>Rust</strong> using <strong>Ratatui</strong> (and Crossterm under the hood).</p>
+<p>This episode is all about getting the <em>boring but critical</em> stuff in place: a solid <strong>main loop</strong>, a clean <strong>terminal UI lifecycle</strong> and the first pass at <strong>input handling</strong>.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Created a minimal <code>Config</code> (placeholder for later CLI parsing)</li>
+<li>Implemented the <strong>main loop</strong> that runs typing sessions until the user quits</li>
+<li>Built a <code>run_ui()</code> function that:
+<ul>
+<li>initializes the terminal</li>
+<li>runs an event loop</li>
+<li>draws every frame</li>
+<li>polls keyboard input</li>
+<li>restores the terminal on exit</li>
+</ul>
+</li>
+<li>Added an <code>App</code> wrapper that:
+<ul>
+<li>draws the current screen (for now: just the target text)</li>
+<li>handles key events</li>
+<li>tracks a <code>should_quit</code> flag</li>
+</ul>
+</li>
+</ul>
+<p>At the end of Part 1 we have a real interactive terminal program that can react to keys and exit cleanly, which is exactly what we need before we start adding “typing trainer” features.</p>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#start-with-the-loop-not-the-features" aria-hidden="true" class="anchor" id="start-with-the-loop-not-the-features"></a>Start With the Loop, Not the Features</h3>
+<p>It is tempting to jump straight into WPM counters, colored text and accuracy tracking. But terminal apps are unforgiving: if your setup/teardown is messy, you’ll constantly fight broken terminal states.</p>
+<p>So the goal here is simple: <strong>a reliable foundation</strong>.</p>
+<h3><a href="#separate-ui-app-from-typing-state" aria-hidden="true" class="anchor" id="separate-ui-app-from-typing-state"></a>Separate “UI App” from “Typing State”</h3>
+<p>We keep:</p>
+<ul>
+<li><code>App</code> → UI/event-loop concerns (draw, input dispatch, quit flags)</li>
+<li><code>State</code> → typing-session data (target, input, timing, stats)</li>
+</ul>
+<p>Right now <code>State</code> is mostly scaffolding (some methods are <code>todo!()</code>), but the boundary is already in place.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#the-main-practice-loop" aria-hidden="true" class="anchor" id="the-main-practice-loop"></a>The Main Practice Loop</h3>
+<p>The program is structured around a session loop: fetch text → create state → run UI → decide whether to repeat.</p>
+<pre class="language-rust"><span class="source rust"><span class="keyword control rust">loop</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    <span class="storage type rust">let</span> text <span class="keyword operator assignment rust">=</span> <span class="support function rust">get_text</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="keyword operator bitwise rust">&amp;</span>config</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span><span class="punctuation terminator rust">;</span>
+    <span class="storage type rust">let</span> state <span class="keyword operator assignment rust">=</span> <span class="meta path rust">State<span class="punctuation accessor rust">::</span></span>new<span class="meta group rust"><span class="punctuation section group begin rust">(</span>text</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+    <span class="storage type rust">let</span> should_loop <span class="keyword operator assignment rust">=</span> <span class="support function rust">run_ui</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>state<span class="punctuation separator rust">,</span> <span class="keyword operator bitwise rust">&amp;</span>config</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span><span class="punctuation terminator rust">;</span>
+    <span class="keyword control rust">if</span> <span class="keyword operator logical rust">!</span>should_loop <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="keyword control rust">break</span><span class="punctuation terminator rust">;</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span></code></pre>
+<p>This makes it easy to support “restart with new text” later, without restarting the whole binary.</p>
+<h3><a href="#terminal-ui-event-loop-ratatui--crossterm" aria-hidden="true" class="anchor" id="terminal-ui-event-loop-ratatui--crossterm"></a>Terminal UI Event Loop (Ratatui + Crossterm)</h3>
+<p>Inside <code>run_ui()</code> we:</p>
+<ul>
+<li>init terminal</li>
+<li>enable mouse capture (even if unused for now)</li>
+<li>draw repeatedly</li>
+<li>poll for key events</li>
+<li>restore terminal on exit</li>
+</ul>
+<pre class="language-rust"><span class="source rust"><span class="storage type rust">let</span> <span class="storage modifier rust">mut</span> terminal <span class="keyword operator assignment rust">=</span> <span class="meta path rust">ratatui<span class="punctuation accessor rust">::</span></span>init<span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+<span class="support macro rust">execute!</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="support function rust">stdout</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span> EnableMouseCapture</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span><span class="punctuation terminator rust">;</span>
+
+<span class="storage type rust">let</span> <span class="storage modifier rust">mut</span> app <span class="keyword operator assignment rust">=</span> <span class="meta path rust">App<span class="punctuation accessor rust">::</span></span>new<span class="meta group rust"><span class="punctuation section group begin rust">(</span>state<span class="punctuation separator rust">,</span> config</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+
+<span class="keyword control rust">loop</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    terminal<span class="punctuation accessor dot rust">.</span><span class="support function rust">draw</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="meta function closure rust"><span class="meta function parameters rust"><span class="punctuation section parameters begin rust">|</span></span></span><span class="meta function closure rust"><span class="meta function parameters rust"><span class="variable parameter rust">frame</span><span class="punctuation section parameters end rust">|</span></span> </span><span class="meta function closure rust">app<span class="punctuation accessor dot rust">.</span><span class="support function rust">draw</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>frame</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span><span class="punctuation terminator rust">;</span>
+
+    <span class="keyword control rust">if</span> app<span class="punctuation accessor dot rust">.</span>should_quit <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="keyword control rust">break</span><span class="punctuation terminator rust">;</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+
+    <span class="keyword control rust">if</span> <span class="meta path rust">event<span class="punctuation accessor rust">::</span></span>poll<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="meta path rust">Duration<span class="punctuation accessor rust">::</span></span>from_millis<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="constant numeric integer decimal rust">100</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="keyword control rust">if</span> <span class="storage type rust">let</span> <span class="meta path rust">Event<span class="punctuation accessor rust">::</span></span>Key<span class="meta group rust"><span class="punctuation section group begin rust">(</span>key_code</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="keyword operator assignment rust">=</span> <span class="meta path rust">event<span class="punctuation accessor rust">::</span></span>read<span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+            app<span class="punctuation accessor dot rust">.</span><span class="support function rust">handle_key_event</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>key_code<span class="punctuation accessor dot rust">.</span>code<span class="punctuation separator rust">,</span> key_code<span class="punctuation accessor dot rust">.</span>modifiers</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+        </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+
+<span class="meta path rust">ratatui<span class="punctuation accessor rust">::</span></span>restore<span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+<span class="support macro rust">execute!</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="support function rust">stdout</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span> DisableMouseCapture</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="keyword operator rust">?</span><span class="punctuation terminator rust">;</span>
+</span></code></pre>
+<hr />
+<h3><a href="#first-keybindings-early-version" aria-hidden="true" class="anchor" id="first-keybindings-early-version"></a>First Keybindings (Early Version)</h3>
+<p>We already sketch the behavior we want:</p>
+<ul>
+<li>When complete:
+<ul>
+<li><code>Enter</code> → quit</li>
+<li><code>Esc</code> → restart</li>
+</ul>
+</li>
+<li>During typing:
+<ul>
+<li><code>Ctrl+C</code> → quit</li>
+<li><code>Ctrl+W</code> → delete word (hooked, logic comes later)</li>
+<li><code>Backspace</code> → delete char (hooked)</li>
+<li><code>Char(c)</code> / <code>Enter</code> → add input + start/stop timer</li>
+</ul>
+</li>
+</ul>
+<p>This is the skeleton that later episodes will “fill in” with actual typing logic.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>In <strong>Part 2</strong> we will focus on rendering the typing text properly: turning the raw target/input into something that feels great to use in a terminal UI:</p>
+<ul>
+<li>Introduce the <code>Character</code> enum (hit / miss / empty) to represent per-cell state</li>
+<li>Build the layout helpers like <code>build_line</code> and <code>build_page</code> to split the text into renderable chunks</li>
+<li>Render those chunks with Ratatui widgets (styling, spans, lines) instead of a plain paragraph</li>
+<li>Center the typing area so the text sits nicely in the middle of the terminal</li>
+</ul>
+<p>Once that is in place, we will have a solid UI foundation to layer in typing logic and real-time stats in the following episodes.</p>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/typegym">typegym</a></p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
