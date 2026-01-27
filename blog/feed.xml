@@ -1,4 +1,102 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2026 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 23 Jan 2026 22:17:23 +0000</lastBuildDate><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 1: Main Loop</title><link>https://letsreinventthewheel.github.io/blog/typegym-part1</link><description><![CDATA[<p>In Part 1 of our TypeGym series we set up the terminal app skeleton using Rust + Ratatui:
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2026 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 27 Jan 2026 08:10:22 +0000</lastBuildDate><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 2: Ratatui UI</title><link>https://letsreinventthewheel.github.io/blog/typegym-part2</link><description><![CDATA[<p>In Part 2 of our TypeGym series we build the real typing screen UI using Ratatui:
+character classification (hit/miss/empty), line/page building, styled rendering, centering,
+and correct cursor placement.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/typegym-part2</guid><pubDate>Tue, 27 Jan 2026 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <strong>Part 2</strong> we move past the barebones scaffolding from Part 1 and build what <em>actually feels</em> like a typing trainer:
+a proper <strong>Ratatui UI</strong>.</p>
+<p>Instead of rendering the target text as a plain paragraph, we now render a <strong>typing view</strong> where every cell is classified as:</p>
+<ul>
+<li>✅ <strong>Hit</strong> (correct character)</li>
+<li>❌ <strong>Miss</strong> (incorrect character)</li>
+<li>⬜ <strong>Empty</strong> (not typed yet)</li>
+</ul>
+<p>On top of that, we center the typing area in the terminal and place the cursor exactly where the next character should go.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Added a <code>Character</code> enum to represent <strong>Hit / Miss / Empty</strong></li>
+<li>Implemented <code>classify_character()</code> to turn <em>(target, input)</em> into a <code>Character</code></li>
+<li>Built <code>State::build_line()</code> and <code>State::build_page()</code> to generate renderable lines/pages</li>
+<li>Switched rendering to Ratatui <code>Span</code>/<code>Line</code> so each character can be styled independently</li>
+<li>Centered the typing area horizontally + vertically based on the current terminal size</li>
+<li>Added cursor positioning so the terminal cursor follows the typing position</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#model-first-ui-becomes-easy" aria-hidden="true" class="anchor" id="model-first-ui-becomes-easy"></a>Model First: UI Becomes Easy</h3>
+<p>The big shift in this episode is that we don’t “render strings” anymore: we render <strong>typed state</strong>.</p>
+<p>Once we represent every position as a <code>Character</code>, the UI becomes a simple mapping:</p>
+<ul>
+<li><code>Hit(c)</code> → normal span</li>
+<li><code>Miss(c)</code> → styled span (and we special-case spaces so mistakes are visible)</li>
+<li><code>Empty(c)</code> → dim/secondary styled span</li>
+</ul>
+<p>This is one of those patterns that scales nicely: the rendering code stays clean even as the app grows.</p>
+<h3><a href="#build-a-page-from-two-strings" aria-hidden="true" class="anchor" id="build-a-page-from-two-strings"></a>Build a Page From Two Strings</h3>
+<p>We also start treating the target + input as two aligned streams and building a <strong>page</strong> from them. That gives us a nice place to later add:</p>
+<ul>
+<li>wrapping/reflow</li>
+<li>scrolling</li>
+<li>multi-paragraph selection</li>
+<li>stats overlays</li>
+</ul>
+<p>But for now: just “turn state into renderable lines.”</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#1-character-enum--classification" aria-hidden="true" class="anchor" id="1-character-enum--classification"></a>1) <code>Character</code> enum + classification</h3>
+<p>We introduce a tiny enum that encodes the UI truth for each cell:</p>
+<pre class="language-rust"><span class="source rust"><span class="meta enum rust"><span class="storage modifier rust">pub</span> <span class="storage type enum rust">enum</span> <span class="entity name enum rust">Character</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    Hit<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="storage type rust">char</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+    Miss<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="storage type rust">char</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+    Empty<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="storage type rust">char</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span></span>
+</span></code></pre>
+<p>Then <code>classify_character(target, input)</code> decides which variant we get. This is the heart of the UI: it converts raw characters into something we can style and render consistently.</p>
+<h3><a href="#2-building-lines-and-pages" aria-hidden="true" class="anchor" id="2-building-lines-and-pages"></a>2) Building lines and pages</h3>
+<p>To render multi-line text, <code>State</code> builds:</p>
+<ul>
+<li>a <strong>Line</strong>: <code>Vec&lt;Character&gt;</code></li>
+<li>a <strong>Page</strong>: <code>Vec&lt;Line&gt;</code></li>
+</ul>
+<p>The idea is simple:</p>
+<ol>
+<li>iterate over target + input chars</li>
+<li>classify each position into a <code>Character</code></li>
+<li>collect into a line</li>
+<li>do that for every target line → page</li>
+</ol>
+<p>This makes the UI rendering phase extremely straightforward: render a <code>Page</code>, not raw strings.</p>
+<h3><a href="#3-ratatui-rendering-with-span--line" aria-hidden="true" class="anchor" id="3-ratatui-rendering-with-span--line"></a>3) Ratatui rendering with <code>Span</code> + <code>Line</code></h3>
+<p>Instead of a single <code>Paragraph::new(String)</code>, we now build <code>Vec&lt;Line&gt;</code> where each line contains a list of <code>Span</code>s (one per character), each with its own style.</p>
+<p>That’s how we get fine-grained coloring and formatting without fighting the widget system.</p>
+<p>We also add basic UI config for colors (ANSI indexed colors), e.g. one for misses and one for empty/untyped characters.</p>
+<h3><a href="#4-centering-the-typing-area" aria-hidden="true" class="anchor" id="4-centering-the-typing-area"></a>4) Centering the typing area</h3>
+<p>Terminal UIs look instantly better when the “main content” isn’t glued to the top-left corner.</p>
+<p>We compute:</p>
+<ul>
+<li>the total text height</li>
+<li>the max line width</li>
+<li>a vertical and horizontal margin</li>
+</ul>
+<p>…then use Ratatui <code>Layout</code> to carve out a centered rectangle and render the paragraph there.</p>
+<h3><a href="#5-cursor-placement" aria-hidden="true" class="anchor" id="5-cursor-placement"></a>5) Cursor placement</h3>
+<p>Finally, we place the cursor exactly where the next input should happen:</p>
+<ul>
+<li><code>cursor_row</code> = number of <code>\n</code> in input</li>
+<li><code>cursor_col</code> = distance from last newline</li>
+</ul>
+<p>Then we offset those coordinates into the centered render area and call <code>frame.set_cursor_position(...)</code>.</p>
+<p>This is small, but it’s a <em>huge</em> step in making the app feel “real”.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>Now that we have a real typing UI, the next episode(s) can focus on turning the app into a functional trainer:</p>
+<ul>
+<li>updating <code>State</code> on keystrokes (insert, backspace, ctrl+word delete)</li>
+<li>computing and displaying stats (WPM, accuracy) using the new UI foundation</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/typegym">typegym</a></p>
+]]></content:encoded></item><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 1: Main Loop</title><link>https://letsreinventthewheel.github.io/blog/typegym-part1</link><description><![CDATA[<p>In Part 1 of our TypeGym series we set up the terminal app skeleton using Rust + Ratatui:
 a clean main loop, a UI event loop, and the first round of key handling. Nothing fancy yet.
 Just the foundation we will build the actual typing trainer on top of.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/typegym-part1</guid><pubDate>Fri, 23 Jan 2026 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>Welcome to <strong>Part 1</strong> of <strong>TypeGym</strong>: a terminal based typing trainer we’re building from scratch in <strong>Rust</strong> using <strong>Ratatui</strong> (and Crossterm under the hood).</p>
