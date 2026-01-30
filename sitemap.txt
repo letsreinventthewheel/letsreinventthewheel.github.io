@@ -1,5 +1,6 @@
 https://letsreinventthewheel.github.io/
 https://letsreinventthewheel.github.io/blog
+https://letsreinventthewheel.github.io/blog/typegym-part3
 https://letsreinventthewheel.github.io/blog/typegym-part2
 https://letsreinventthewheel.github.io/blog/typegym-part1
 https://letsreinventthewheel.github.io/blog/tower-blocks-ep6

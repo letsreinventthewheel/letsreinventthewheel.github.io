@@ -1,4 +1,138 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2026 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Tue, 27 Jan 2026 08:10:22 +0000</lastBuildDate><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 2: Ratatui UI</title><link>https://letsreinventthewheel.github.io/blog/typegym-part2</link><description><![CDATA[<p>In Part 2 of our TypeGym series we build the real typing screen UI using Ratatui:
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Let&apos;s Reinvent the Wheel</title><link>https://letsreinventthewheel.github.io</link><description>Let&apos;s Reinvent the Wheel: a companion space to my YouTube channel</description><language>en-us</language><copyright>2026 Let&apos;s Reinvent the Wheel</copyright><managingEditor>letsreinventthewheelyt@gmail.com</managingEditor><webMaster>letsreinventthewheelyt@gmail.com</webMaster><lastBuildDate>Fri, 30 Jan 2026 06:49:02 +0000</lastBuildDate><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 3: Typing Logic</title><link>https://letsreinventthewheel.github.io/blog/typegym-part3</link><description><![CDATA[<p>In Part 3 of our TypeGym series we make the trainer actually work: real input handling
+(typing, backspace, Ctrl+W), session timing, and the first real stats (WPM + accuracy),
+all shown directly in the Ratatui UI when you finish a run.</p>
+]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/typegym-part3</guid><pubDate>Fri, 30 Jan 2026 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <strong>Part 3</strong> we finally cross the line from “nice UI prototype” to an <strong>actual working typing trainer</strong>.</p>
+<p>We implement the core typing behavior (including sane whitespace handling), wire up session timing, compute <strong>WPM</strong> and <strong>accuracy</strong>, and display results right inside the UI once you complete the text.</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Implemented the missing <code>State</code> mutations:
+<ul>
+<li><code>apply_char()</code> (including whitespace logic)</li>
+<li><code>apply_backspace()</code></li>
+<li><code>apply_backspace_word()</code> (<strong>Ctrl+W</strong> behavior)</li>
+</ul>
+</li>
+<li>Added session timing:
+<ul>
+<li><code>start_clock()</code>, <code>stop_clock()</code>, and <code>has_started()</code></li>
+</ul>
+</li>
+<li>Added the first real stats:
+<ul>
+<li><code>wpm()</code> and <code>accuracy()</code></li>
+</ul>
+</li>
+<li>Updated the UI to show a results line when the session is complete</li>
+<li>Enabled “start a new session” flow by returning a <code>should_loop</code> flag from the UI runner</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#whitespace-is-the-hard-part-in-terminal-typing" aria-hidden="true" class="anchor" id="whitespace-is-the-hard-part-in-terminal-typing"></a>Whitespace Is the Hard Part (In Terminal Typing)</h3>
+<p>If you treat whitespace like any other character, terminal typing apps quickly feel annoying:</p>
+<ul>
+<li>multiple spaces are hard to see</li>
+<li>line breaks can be confusing</li>
+<li>“what does a wrong space even mean?”</li>
+</ul>
+<p>So we handle whitespace intentionally:</p>
+<ul>
+<li>When the user types <strong>any whitespace</strong>, we append the matching whitespace from the target (all consecutive whitespace at that position).</li>
+<li>If there isn’t any target whitespace at that position, we fall back to a single space.</li>
+</ul>
+<p>This keeps the experience consistent and prevents the input from drifting out of alignment.</p>
+<h3><a href="#hits-are-about-staying-error-free" aria-hidden="true" class="anchor" id="hits-are-about-staying-error-free"></a>“Hits” Are About Staying Error-Free</h3>
+<p>For accuracy we track two counters:</p>
+<ul>
+<li><code>strokes</code>: every time you type something</li>
+<li><code>hits</code>: the strokes where the input is still a valid prefix of the target</li>
+</ul>
+<p>So a “hit” is basically: <em>after this keypress, are we still error-free?</em>
+That’s a simple, intuitive baseline metric for early versions of the trainer.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#1-typing-input-with-smart-whitespace" aria-hidden="true" class="anchor" id="1-typing-input-with-smart-whitespace"></a>1) Typing input with smart whitespace</h3>
+<p><code>apply_char()</code> is now real. It:</p>
+<ul>
+<li>stops input from exceeding target length</li>
+<li>expands whitespace into the matching whitespace run from the target</li>
+<li>increments <code>strokes</code> and <code>hits</code> based on whether the input still matches the target prefix</li>
+</ul>
+<pre class="language-rust"><span class="source rust"><span class="meta function rust"><span class="meta function rust"><span class="storage modifier rust">pub</span> <span class="storage type function rust">fn</span> </span><span class="entity name function rust">apply_char</span></span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters begin rust">(</span><span class="keyword operator rust">&amp;</span><span class="storage modifier rust">mut</span> <span class="variable parameter rust">self</span>, <span class="variable parameter rust">c</span><span class="punctuation separator rust">:</span> <span class="storage type rust">char</span></span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters end rust">)</span></span></span></span><span class="meta function rust"> </span><span class="meta function rust"><span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    <span class="storage type rust">let</span> target_count <span class="keyword operator assignment rust">=</span> <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>target<span class="punctuation accessor dot rust">.</span><span class="support function rust">chars</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation accessor dot rust">.</span><span class="support function rust">count</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+    <span class="storage type rust">let</span> input_count <span class="keyword operator assignment rust">=</span> <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>input<span class="punctuation accessor dot rust">.</span><span class="support function rust">chars</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation accessor dot rust">.</span><span class="support function rust">count</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+
+    <span class="keyword control rust">if</span> input_count <span class="keyword operator comparison rust">&gt;=</span> target_count <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="keyword control rust">return</span><span class="punctuation terminator rust">;</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+
+    <span class="storage type rust">let</span> to_append <span class="keyword operator assignment rust">=</span> <span class="keyword control rust">if</span> c<span class="punctuation accessor dot rust">.</span><span class="support function rust">is_whitespace</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="storage type rust">let</span> ws<span class="punctuation separator rust">:</span> <span class="support type rust">String</span> <span class="keyword operator assignment rust">=</span> <span class="variable language rust">self</span>
+            <span class="punctuation accessor dot rust">.</span>target
+            <span class="punctuation accessor dot rust">.</span><span class="support function rust">chars</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span>
+            <span class="punctuation accessor dot rust">.</span><span class="support function rust">skip</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>input_count</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span>
+            <span class="punctuation accessor dot rust">.</span><span class="support function rust">take_while</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="meta function closure rust"><span class="meta function parameters rust"><span class="punctuation section parameters begin rust">|</span></span></span><span class="meta function closure rust"><span class="meta function parameters rust"><span class="variable parameter rust">c</span><span class="punctuation section parameters end rust">|</span></span> </span><span class="meta function closure rust">c<span class="punctuation accessor dot rust">.</span><span class="support function rust">is_whitespace</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span>
+            <span class="punctuation accessor dot rust">.</span><span class="support function rust">collect</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+        <span class="keyword control rust">if</span> ws<span class="punctuation accessor dot rust">.</span><span class="support function rust">is_empty</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span> <span class="string quoted double rust"><span class="punctuation definition string begin rust">&quot;</span> <span class="punctuation definition string end rust">&quot;</span></span><span class="punctuation accessor dot rust">.</span><span class="support function rust">to_string</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span> <span class="keyword control rust">else</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span> ws </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span> <span class="keyword control rust">else</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        c<span class="punctuation accessor dot rust">.</span><span class="support function rust">to_string</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span><span class="punctuation terminator rust">;</span>
+
+    <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>input<span class="punctuation accessor dot rust">.</span><span class="support function rust">push_str</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="keyword operator bitwise rust">&amp;</span>to_append</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation terminator rust">;</span>
+
+    <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>strokes <span class="keyword operator assignment rust">+=</span> <span class="constant numeric integer decimal rust">1</span><span class="punctuation terminator rust">;</span>
+    <span class="keyword control rust">if</span> <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span><span class="support function rust">is_error_free</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>hits <span class="keyword operator assignment rust">+=</span> <span class="constant numeric integer decimal rust">1</span><span class="punctuation terminator rust">;</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span></span>
+</span></code></pre>
+<h3><a href="#2-backspace-that-respects-whitespace-groups" aria-hidden="true" class="anchor" id="2-backspace-that-respects-whitespace-groups"></a>2) Backspace that respects whitespace groups</h3>
+<p>Normal backspace removes at least one “character”, but if both the input and the target end with whitespace at the current position, we remove the whole matching whitespace run. That makes “undoing” spaces/newlines feel natural.</p>
+<h3><a href="#3-ctrlw-word-deletion" aria-hidden="true" class="anchor" id="3-ctrlw-word-deletion"></a>3) Ctrl+W word deletion</h3>
+<p><code>apply_backspace_word()</code> behaves like a terminal-friendly “delete previous word”:</p>
+<ol>
+<li>remove trailing whitespace</li>
+<li>remove the word (non-whitespace)</li>
+<li>remove a single whitespace before the word (then stop)</li>
+</ol>
+<p>This is one of those tiny UX details that instantly makes the tool feel more serious.</p>
+<h3><a href="#4-session-timing-start-stop-and-elapsed-time" aria-hidden="true" class="anchor" id="4-session-timing-start-stop-and-elapsed-time"></a>4) Session timing: start, stop, and elapsed time</h3>
+<p>We record the start time on the first meaningful input and stop when the session completes. Then we derive elapsed seconds for stats:</p>
+<pre class="language-rust"><span class="source rust"><span class="meta function rust"><span class="meta function rust"><span class="storage type function rust">fn</span> </span><span class="entity name function rust">elapsed_seconds</span></span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters begin rust">(</span><span class="keyword operator rust">&amp;</span><span class="variable parameter rust">self</span></span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters end rust">)</span></span></span></span><span class="meta function rust"> <span class="meta function return-type rust"><span class="punctuation separator rust">-&gt;</span> <span class="storage type rust">f64</span></span> </span><span class="meta function rust"><span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    <span class="keyword control rust">match</span> <span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>session_start<span class="punctuation separator rust">,</span> <span class="variable language rust">self</span><span class="punctuation accessor dot rust">.</span>session_end</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="support type rust">Some</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>start</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span> <span class="support type rust">Some</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>end</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="keyword operator rust">=&gt;</span> end<span class="punctuation accessor dot rust">.</span><span class="support function rust">duration_since</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>start</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation accessor dot rust">.</span><span class="support function rust">as_secs_f64</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+        <span class="keyword operator rust">_</span> <span class="keyword operator rust">=&gt;</span> <span class="constant numeric float rust">0.</span><span class="constant numeric float rust">0</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span></span>
+</span></code></pre>
+<h3><a href="#5-wpm--accuracy" aria-hidden="true" class="anchor" id="5-wpm--accuracy"></a>5) WPM + accuracy</h3>
+<p>WPM is computed with the standard “5 chars = 1 word” approximation:</p>
+<ul>
+<li><code>wpm = (chars / 5) / (seconds / 60)</code></li>
+</ul>
+<p>We also introduce <code>chars_count()</code> that treats <strong>consecutive whitespace as a single unit</strong>. The goal is to avoid weird stats spikes from runs of spaces/newlines in the target text.</p>
+<p>Accuracy is the simple ratio:</p>
+<ul>
+<li><code>hits / strokes</code> (with a default of 100% if you haven’t typed anything yet)</li>
+</ul>
+<h3><a href="#6-results-ui--new-session-loop" aria-hidden="true" class="anchor" id="6-results-ui--new-session-loop"></a>6) Results UI + new session loop</h3>
+<p>When the text is complete, we render a results line (WPM + accuracy) and show a hint:</p>
+<ul>
+<li><strong>Enter</strong> to quit</li>
+<li><strong>Esc</strong> to start a new session</li>
+</ul>
+<p>We also return <code>should_loop</code> from <code>run_ui()</code> so the outer application loop can restart cleanly without a full program restart.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>Now that TypeGym is <strong>interactive</strong> and can complete a run, we can start improving the “trainer” experience:</p>
+<ul>
+<li>better text sourcing (files, random samples, curated texts)</li>
+<li>command line arguments</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/typegym">typegym</a></p>
+]]></content:encoded></item><item><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 2: Ratatui UI</title><link>https://letsreinventthewheel.github.io/blog/typegym-part2</link><description><![CDATA[<p>In Part 2 of our TypeGym series we build the real typing screen UI using Ratatui:
 character classification (hit/miss/empty), line/page building, styled rendering, centering,
 and correct cursor placement.</p>
 ]]></description><author>Kontantin Saveljev</author><guid>https://letsreinventthewheel.github.io/blog/typegym-part2</guid><pubDate>Tue, 27 Jan 2026 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>In <strong>Part 2</strong> we move past the barebones scaffolding from Part 1 and build what <em>actually feels</em> like a typing trainer:
