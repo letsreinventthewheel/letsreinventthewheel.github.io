@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en"><head><title>Coding TypeGym: A Rust Terminal Typing Trainer | Part 4: Text Sources</title><meta charset="utf-8"><meta name="title" content="Coding TypeGym: A Rust Terminal Typing Trainer | Part 4: Text Sources"><meta name="description" content="&lt;p&gt;In Part 4 of our TypeGym series we build a flexible text pipeline. We introduce
+a &lt;code&gt;TextSource&lt;/code&gt; enum, wire it into &lt;code&gt;Config&lt;/code&gt;, add a few generators (plain + weighted
+nonsense), and support grabbing a random slice of lines from a file, thus giving
+the trainer real, varied practice content.&lt;/p&gt;
+"><meta name="author" content="Konstantin Saveljev (Let's Reinvent the Wheel [YouTube])"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google-site-verification" content="vxirvCL76iTa-DRcURspQpGm0NvyxSQDBwncMnb8YE4"><meta name="msvalidate.01" content="06DC990D9D0525AF53BD9C295CEB171B"><link rel="sitemap" href="/sitemap.xml"><link rel="alternate" type="application/rss+xml" title="Let’s Reinvent the Wheel :: Blog" href="/blog/feed.xml"><link rel="stylesheet" href="/main.css?hash=22a6509cab06d665"></head><body><header><button class="menu-toggle"><span></span><span></span><span></span></button><nav class="nav"><a class="github" href="https://github.com/letsreinventthewheel" target="_blank"></a><a class="" href="/">Home</a><a class="active" href="/blog">Blog</a></nav><h1>Coding TypeGym: A Rust Terminal Typing Trainer | Part 4: Text Sources</h1><p>Published on <time class="dt-published" datetime="2026-02-11">February 11<sup>th</sup>, 2026</time></p></header><main id="main"><section class="video_container"><iframe src="https://www.youtube.com/embed/OQtmYGS6_Po" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></section><p>In <strong>Part 4</strong> we give TypeGym something <em>interesting</em> to type.</p>
+<p>Up until now the app was functional, but the practice text was basically hard-coded. This episode is all about building a small <strong>text pipeline</strong> so each session can pull content from different places (without touching the UI or typing logic).</p>
+<hr />
+<h2><a href="#what-we-covered" aria-hidden="true" class="anchor" id="what-we-covered"></a>What We Covered</h2>
+<ul>
+<li>Added a <code>TextSource</code> enum that defines where practice text comes from:
+<ul>
+<li>static text</li>
+<li>generated nonsense (random words)</li>
+<li>generated <em>weighted</em> nonsense (word frequency-like sampling)</li>
+<li>a slice of lines from a file</li>
+</ul>
+</li>
+<li>Wired <code>TextSource</code> into <code>Config</code> (<code>config.text_source</code>)</li>
+<li>Implemented <code>get_text(config)</code> to dispatch to the selected source</li>
+<li>Added <code>rand</code> to the project and introduced two small data files:
+<ul>
+<li><code>data/words.txt</code></li>
+<li><code>data/words_weighted.txt</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2><a href="#design-insights" aria-hidden="true" class="anchor" id="design-insights"></a>Design Insights</h2>
+<h3><a href="#treat-text-as-an-input-system" aria-hidden="true" class="anchor" id="treat-text-as-an-input-system"></a>Treat “text” as an input system</h3>
+<p>Typing logic and UI shouldn’t care <strong>where</strong> the text came from.</p>
+<p>By making “text generation/loading” an isolated module (and routing it through <code>Config</code>), we can keep the rest of the app stable while we iterate on content:</p>
+<ul>
+<li>swap sources</li>
+<li>add new sources</li>
+<li>improve formatting and sampling</li>
+<li>eventually add “real corpora” or smarter generators</li>
+</ul>
+<p>All without ripping up the main loop.</p>
+<h3><a href="#nonsense-text-is-surprisingly-useful" aria-hidden="true" class="anchor" id="nonsense-text-is-surprisingly-useful"></a>“Nonsense text” is surprisingly useful</h3>
+<p>Random words are a great default because:</p>
+<ul>
+<li>it’s always available (no external files required beyond the word list)</li>
+<li>it produces lots of variety</li>
+<li>it’s easy to scale (more/less words, different chunking, different weighting)</li>
+</ul>
+<p>And for a typing trainer series, it’s perfect: we can keep building features without needing to constantly curate practice texts.</p>
+<hr />
+<h2><a href="#implementation-highlights" aria-hidden="true" class="anchor" id="implementation-highlights"></a>Implementation Highlights</h2>
+<h3><a href="#1-textsource-enum" aria-hidden="true" class="anchor" id="1-textsource-enum"></a>1) <code>TextSource</code> enum</h3>
+<p>We add a small enum that represents <em>how</em> we fetch practice text:</p>
+<pre class="language-rust"><span class="source rust"><span class="meta annotation rust"><span class="punctuation definition annotation rust">#</span><span class="punctuation section group begin rust">[</span><span class="variable annotation rust">derive</span><span class="meta annotation parameters rust"><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span></span><span class="meta annotation parameters rust"><span class="meta group rust">Debug</span></span><span class="meta annotation parameters rust"><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span><span class="punctuation section group end rust">]</span></span>
+<span class="meta enum rust"><span class="storage modifier rust">pub</span> <span class="storage type enum rust">enum</span> <span class="entity name enum rust">TextSource</span> <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    Static<span class="punctuation separator rust">,</span>
+    GenerateNonsense<span class="punctuation separator rust">,</span>
+    GenerateWeightedNonsense<span class="punctuation separator rust">,</span>
+    File<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="support type rust">String</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+    <span class="comment line double-slash rust"><span class="punctuation definition comment rust">//</span> TODO: MarkovChain(String),
+</span></span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span></span>
+</span></code></pre>
+<p>This is the key abstraction for the episode: everything else becomes “just implementation details”.</p>
+<h3><a href="#2-central-get_textconfig-dispatche" aria-hidden="true" class="anchor" id="2-central-get_textconfig-dispatche"></a>2) Central <code>get_text(config)</code> dispatche</h3>
+<p><code>get_text()</code> now does the obvious thing: match on <code>config.text_source</code> and return the requested content.</p>
+<pre class="language-rust"><span class="source rust"><span class="meta function rust"><span class="meta function rust"><span class="storage modifier rust">pub</span> <span class="storage type function rust">fn</span> </span><span class="entity name function rust">get_text</span></span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters begin rust">(</span><span class="variable parameter rust">config</span><span class="punctuation separator rust">:</span> <span class="keyword operator rust">&amp;</span>Config</span><span class="meta function rust"><span class="meta function parameters rust"><span class="punctuation section parameters end rust">)</span></span></span></span><span class="meta function rust"> <span class="meta function return-type rust"><span class="punctuation separator rust">-&gt;</span> <span class="meta generic rust"><span class="support type rust">Result</span><span class="punctuation definition generic begin rust">&lt;</span><span class="support type rust">String</span><span class="punctuation definition generic end rust">&gt;</span></span></span> </span><span class="meta function rust"><span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+    <span class="keyword control rust">match</span> config<span class="punctuation accessor dot rust">.</span>text_source <span class="meta block rust"><span class="punctuation section block begin rust">{</span>
+        <span class="meta path rust">TextSource<span class="punctuation accessor rust">::</span></span>Static <span class="keyword operator rust">=&gt;</span> <span class="support type rust">Ok</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="constant other rust">TEXT</span><span class="punctuation accessor dot rust">.</span><span class="support function rust">to_string</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+        <span class="meta path rust">TextSource<span class="punctuation accessor rust">::</span></span>GenerateNonsense <span class="keyword operator rust">=&gt;</span> <span class="support function rust">generate_nonsense</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+        <span class="meta path rust">TextSource<span class="punctuation accessor rust">::</span></span>GenerateWeightedNonsense <span class="keyword operator rust">=&gt;</span> <span class="support function rust">generate_weighted_nonsense</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span></span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+        <span class="meta path rust">TextSource<span class="punctuation accessor rust">::</span></span>File<span class="meta group rust"><span class="punctuation section group begin rust">(</span><span class="storage modifier rust">ref</span> path</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span> <span class="keyword operator rust">=&gt;</span> <span class="support function rust">read_lines_from_file</span><span class="meta group rust"><span class="punctuation section group begin rust">(</span>path</span><span class="meta group rust"><span class="punctuation section group end rust">)</span></span><span class="punctuation separator rust">,</span>
+    </span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span>
+</span><span class="meta block rust"><span class="punctuation section block end rust">}</span></span></span>
+</span></code></pre>
+<h3><a href="#3-random-nonsense-from-datawordstxt" aria-hidden="true" class="anchor" id="3-random-nonsense-from-datawordstxt"></a>3) Random nonsense from <code>data/words.txt</code></h3>
+<p>We read a list of words, pick a bunch at random, and format them into lines:</p>
+<ul>
+<li>sample 100 words</li>
+<li>chunk into groups of 10</li>
+<li>join into multiple lines separated by <code>\n</code></li>
+</ul>
+<p>This gives a predictable layout while still being random every session.</p>
+<h3><a href="#4-weighted-nonsense-from-datawords_weightedtxt" aria-hidden="true" class="anchor" id="4-weighted-nonsense-from-datawords_weightedtxt"></a>4) Weighted nonsense from <code>data/words_weighted.txt</code></h3>
+<p>Same idea, but with a “word + weight” file:</p>
+<ul>
+<li>parse lines like <code>word 123</code></li>
+<li>sample based on weights</li>
+<li>format the same way (lines of 10 words)</li>
+</ul>
+<p>The result feels more “natural” because common words appear more often. Although it <em>is</em> still a complete nonsense.</p>
+<h3><a href="#5-file-based-text-pick-a-random-window-of-lines" aria-hidden="true" class="anchor" id="5-file-based-text-pick-a-random-window-of-lines"></a>5) File-based text: pick a random window of lines</h3>
+<p>For file mode we keep it intentionally simple:</p>
+<ul>
+<li>read the file</li>
+<li>pick up to 5 lines</li>
+<li>choose a random start index so each session feels different</li>
+</ul>
+<p>It’s not paragraph-aware yet, but it’s a great stepping stone.</p>
+<hr />
+<h2><a href="#whats-next" aria-hidden="true" class="anchor" id="whats-next"></a>What’s Next?</h2>
+<p>Now that TypeGym can pull practice text from multiple sources, the next improvements become much easier:</p>
+<ul>
+<li>Markov chain to generate more interesting practice texts</li>
+<li>Command line arguments to configure our app</li>
+<li>Improvements to existing functionality (better sampling?)</li>
+</ul>
+<hr />
+<h2><a href="#project-code" aria-hidden="true" class="anchor" id="project-code"></a>Project Code</h2>
+<p>You will find the complete source code here: <a href="https://github.com/letsreinventthewheel/typegym">typegym</a></p>
+</main><footer><p><p>&copy; 2025 Let's Reinvent the Wheel.</p><small>Exploring programming by (re)creating things, one project at a time.</small></p></footer></body><script></script></html>
